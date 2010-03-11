@@ -92,7 +92,7 @@ HashTableMark(PHashTable T, ULONG Data)
 
     //已经有Data项了
     if(HashTableScanData(T, Data, FALSE))
-        return TRUE;
+        return FALSE;
 
     hash = (USHORT)(Data % HASH_TABLE_LENGTH);
     pointer = T->Pool[0].Next;

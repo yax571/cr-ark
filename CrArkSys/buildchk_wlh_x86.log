@@ -60,15 +60,8 @@ cl /Fo"e:\mycode\crarkk~1\crarksys\objchk_wlh_x86\i386/"
  /DKMDF_MAJOR_VERSION=01
  /DKMDF_MINOR_VERSION=007
  /FIC:\WinDDK\6001~1.180\inc\api\warning.h
- .\crarksys.c .\hashtable.c .\enviroment.c .\ade32.c 
-crarksys.c
+ .\hashtable.c 
 hashtable.c
-enviroment.c
-e:\mycode\crarkkrnl\crarksys\enviroment.c(35) : warning C4022: 'ade32_disasm' : pointer mismatch for actual parameter 1
-warnings in directory e:\mycode\crarkk~1\crarksys
-e:\mycode\crarkkrnl\crarksys\enviroment.c(35) : warning C4022: 'ade32_disasm' : pointer mismatch for actual parameter 1
-ade32.c
-Generating Code...
  link.exe /out:e:\mycode\crarkk~1\crarksys\objchk_wlh_x86\i386\CrArkSys.sys /machine:ix86 @e:\mycode\crarkk~1\crarksys\objchk_wlh_x86\i386\lnk.rsp
 Microsoft (R) Incremental Linker Version 8.00.50727.278
 Copyright (C) Microsoft Corporation.  All rights reserved.

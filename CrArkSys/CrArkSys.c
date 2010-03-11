@@ -1,6 +1,8 @@
 #include <ntddk.h>
 #include <string.h>
 #include "CrArkSys.h"
+#include "HashTable.h"
+#include "Enviroment.h"
 
 PDRIVER_OBJECT pdoGlobalDrvObj = 0;
 
@@ -61,6 +63,10 @@ NTSTATUS DriverEntry(
 	PDEVICE_OBJECT pdoDeviceObj = 0;
 	NTSTATUS status = STATUS_UNSUCCESSFUL;
 	pdoGlobalDrvObj = DriverObject;
+
+    //首先初始化各种变量
+    if(EnviromentInitialize() == FALSE)
+        return status;
 
 	// Create the device object.
 	if(!NT_SUCCESS(status = IoCreateDevice(
