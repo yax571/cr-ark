@@ -1,0 +1,91 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CrArkKrnl", "CrArkKrnl\CrArkKrnl.vcproj", "{6F7BA658-5862-4213-AD69-EAE5B8BFB105}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcproj", "{B795497F-E381-47A4-B617-3CD6448430DB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6F7BA658-5862-4213-AD69-EAE5B8BFB105} = {6F7BA658-5862-4213-AD69-EAE5B8BFB105}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CrArkSys.WLH", "CrArkSys\CrArkSys.WLH.vcproj", "{F80E29BD-83AA-4C0A-B66D-892E7D25F705}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+		WLH checked|Win32 = WLH checked|Win32
+		WLH free|Win32 = WLH free|Win32
+		WLH2K checked|Win32 = WLH2K checked|Win32
+		WLH2K free|Win32 = WLH2K free|Win32
+		WLHNET checked|Win32 = WLHNET checked|Win32
+		WLHNET free|Win32 = WLHNET free|Win32
+		WLHXP checked|Win32 = WLHXP checked|Win32
+		WLHXP free|Win32 = WLHXP free|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6F7BA658-5862-4213-AD69-EAE5B8BFB105}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6F7BA658-5862-4213-AD69-EAE5B8BFB105}.Debug|Win32.Build.0 = Debug|Win32
+		{6F7BA658-5862-4213-AD69-EAE5B8BFB105}.Release|Win32.ActiveCfg = Release|Win32
+		{6F7BA658-5862-4213-AD69-EAE5B8BFB105}.Release|Win32.Build.0 = Release|Win32
+		{6F7BA658-5862-4213-AD69-EAE5B8BFB105}.WLH checked|Win32.ActiveCfg = Release|Win32
+		{6F7BA658-5862-4213-AD69-EAE5B8BFB105}.WLH checked|Win32.Build.0 = Release|Win32
+		{6F7BA658-5862-4213-AD69-EAE5B8BFB105}.WLH free|Win32.ActiveCfg = Release|Win32
+		{6F7BA658-5862-4213-AD69-EAE5B8BFB105}.WLH free|Win32.Build.0 = Release|Win32
+		{6F7BA658-5862-4213-AD69-EAE5B8BFB105}.WLH2K checked|Win32.ActiveCfg = Release|Win32
+		{6F7BA658-5862-4213-AD69-EAE5B8BFB105}.WLH2K checked|Win32.Build.0 = Release|Win32
+		{6F7BA658-5862-4213-AD69-EAE5B8BFB105}.WLH2K free|Win32.ActiveCfg = Release|Win32
+		{6F7BA658-5862-4213-AD69-EAE5B8BFB105}.WLH2K free|Win32.Build.0 = Release|Win32
+		{6F7BA658-5862-4213-AD69-EAE5B8BFB105}.WLHNET checked|Win32.ActiveCfg = Release|Win32
+		{6F7BA658-5862-4213-AD69-EAE5B8BFB105}.WLHNET checked|Win32.Build.0 = Release|Win32
+		{6F7BA658-5862-4213-AD69-EAE5B8BFB105}.WLHNET free|Win32.ActiveCfg = Release|Win32
+		{6F7BA658-5862-4213-AD69-EAE5B8BFB105}.WLHNET free|Win32.Build.0 = Release|Win32
+		{6F7BA658-5862-4213-AD69-EAE5B8BFB105}.WLHXP checked|Win32.ActiveCfg = Release|Win32
+		{6F7BA658-5862-4213-AD69-EAE5B8BFB105}.WLHXP checked|Win32.Build.0 = Release|Win32
+		{6F7BA658-5862-4213-AD69-EAE5B8BFB105}.WLHXP free|Win32.ActiveCfg = Release|Win32
+		{6F7BA658-5862-4213-AD69-EAE5B8BFB105}.WLHXP free|Win32.Build.0 = Release|Win32
+		{B795497F-E381-47A4-B617-3CD6448430DB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B795497F-E381-47A4-B617-3CD6448430DB}.Debug|Win32.Build.0 = Debug|Win32
+		{B795497F-E381-47A4-B617-3CD6448430DB}.Release|Win32.ActiveCfg = Release|Win32
+		{B795497F-E381-47A4-B617-3CD6448430DB}.Release|Win32.Build.0 = Release|Win32
+		{B795497F-E381-47A4-B617-3CD6448430DB}.WLH checked|Win32.ActiveCfg = Release|Win32
+		{B795497F-E381-47A4-B617-3CD6448430DB}.WLH checked|Win32.Build.0 = Release|Win32
+		{B795497F-E381-47A4-B617-3CD6448430DB}.WLH free|Win32.ActiveCfg = Release|Win32
+		{B795497F-E381-47A4-B617-3CD6448430DB}.WLH free|Win32.Build.0 = Release|Win32
+		{B795497F-E381-47A4-B617-3CD6448430DB}.WLH2K checked|Win32.ActiveCfg = Release|Win32
+		{B795497F-E381-47A4-B617-3CD6448430DB}.WLH2K checked|Win32.Build.0 = Release|Win32
+		{B795497F-E381-47A4-B617-3CD6448430DB}.WLH2K free|Win32.ActiveCfg = Release|Win32
+		{B795497F-E381-47A4-B617-3CD6448430DB}.WLH2K free|Win32.Build.0 = Release|Win32
+		{B795497F-E381-47A4-B617-3CD6448430DB}.WLHNET checked|Win32.ActiveCfg = Release|Win32
+		{B795497F-E381-47A4-B617-3CD6448430DB}.WLHNET checked|Win32.Build.0 = Release|Win32
+		{B795497F-E381-47A4-B617-3CD6448430DB}.WLHNET free|Win32.ActiveCfg = Release|Win32
+		{B795497F-E381-47A4-B617-3CD6448430DB}.WLHNET free|Win32.Build.0 = Release|Win32
+		{B795497F-E381-47A4-B617-3CD6448430DB}.WLHXP checked|Win32.ActiveCfg = Release|Win32
+		{B795497F-E381-47A4-B617-3CD6448430DB}.WLHXP checked|Win32.Build.0 = Release|Win32
+		{B795497F-E381-47A4-B617-3CD6448430DB}.WLHXP free|Win32.ActiveCfg = Release|Win32
+		{B795497F-E381-47A4-B617-3CD6448430DB}.WLHXP free|Win32.Build.0 = Release|Win32
+		{F80E29BD-83AA-4C0A-B66D-892E7D25F705}.Debug|Win32.ActiveCfg = WLH checked|Win32
+		{F80E29BD-83AA-4C0A-B66D-892E7D25F705}.Debug|Win32.Build.0 = WLH checked|Win32
+		{F80E29BD-83AA-4C0A-B66D-892E7D25F705}.Release|Win32.ActiveCfg = WLH checked|Win32
+		{F80E29BD-83AA-4C0A-B66D-892E7D25F705}.Release|Win32.Build.0 = WLH checked|Win32
+		{F80E29BD-83AA-4C0A-B66D-892E7D25F705}.WLH checked|Win32.ActiveCfg = WLH checked|Win32
+		{F80E29BD-83AA-4C0A-B66D-892E7D25F705}.WLH checked|Win32.Build.0 = WLH checked|Win32
+		{F80E29BD-83AA-4C0A-B66D-892E7D25F705}.WLH free|Win32.ActiveCfg = WLH free|Win32
+		{F80E29BD-83AA-4C0A-B66D-892E7D25F705}.WLH free|Win32.Build.0 = WLH free|Win32
+		{F80E29BD-83AA-4C0A-B66D-892E7D25F705}.WLH2K checked|Win32.ActiveCfg = WLH checked|Win32
+		{F80E29BD-83AA-4C0A-B66D-892E7D25F705}.WLH2K checked|Win32.Build.0 = WLH checked|Win32
+		{F80E29BD-83AA-4C0A-B66D-892E7D25F705}.WLH2K free|Win32.ActiveCfg = WLH checked|Win32
+		{F80E29BD-83AA-4C0A-B66D-892E7D25F705}.WLH2K free|Win32.Build.0 = WLH checked|Win32
+		{F80E29BD-83AA-4C0A-B66D-892E7D25F705}.WLHNET checked|Win32.ActiveCfg = WLH checked|Win32
+		{F80E29BD-83AA-4C0A-B66D-892E7D25F705}.WLHNET checked|Win32.Build.0 = WLH checked|Win32
+		{F80E29BD-83AA-4C0A-B66D-892E7D25F705}.WLHNET free|Win32.ActiveCfg = WLH checked|Win32
+		{F80E29BD-83AA-4C0A-B66D-892E7D25F705}.WLHNET free|Win32.Build.0 = WLH checked|Win32
+		{F80E29BD-83AA-4C0A-B66D-892E7D25F705}.WLHXP checked|Win32.ActiveCfg = WLH checked|Win32
+		{F80E29BD-83AA-4C0A-B66D-892E7D25F705}.WLHXP checked|Win32.Build.0 = WLH checked|Win32
+		{F80E29BD-83AA-4C0A-B66D-892E7D25F705}.WLHXP free|Win32.ActiveCfg = WLH checked|Win32
+		{F80E29BD-83AA-4C0A-B66D-892E7D25F705}.WLHXP free|Win32.Build.0 = WLH checked|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
