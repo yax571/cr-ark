@@ -1,70 +1,100 @@
-BUILD: Examining e:\mycode\crarkk~1\crarksys directory for files to compile.
+BUILD: Examining e:\crark\crarksys directory for files to compile.
+before AssemblyIdentity_AfterReadAllSources
+after AssemblyIdentity_AfterReadAllSources
 skipping post pass 0 command
-Compiling and Linking e:\mycode\crarkk~1\crarksys *************
-'nmake.exe /nologo BUILDMSG=Stop. -i BUILD_PASS=PASS2 LINKONLY=1 NOPASS0=1 MAKEDIR_RELATIVE_TO_BASEDIR='
-e:\mycode\crarkk~1\crarksys: TARGETPATH is obj
- cl.exe @e:\mycode\crarkk~1\crarksys\objchk_wlh_x86\i386\cl.rsp
-Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 14.00.50727.278 for 80x86
+Compiling and Linking e:\crark\crarksys *************
+'nmake.exe /nologo BUILDMSG=Stop. -i BUILD_PASS=PASS2 LINKONLY=1 NOPASS0=1 MAKEDIR_RELATIVE_TO_BASEDIR= MAKEDIR_LOWERCASE=e:\crark\crarksys'
+e:\crark\crarksys: TARGETPATH is obj
+	cl.exe @e:\crark\crarksys\objchk_wlh_x86\i386\cl.rsp
+Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 14.00.50727.220 for 80x86
 Copyright (C) Microsoft Corporation.  All rights reserved.
-cl /Fo"e:\mycode\crarkk~1\crarksys\objchk_wlh_x86\i386/"
- /FC
- /Ii386
- /I.
- /Ie:\mycode\crarkk~1\crarksys\objchk_wlh_x86\i386
- /IC:\WinDDK\6001~1.180\inc\api
- /IC:\WinDDK\6001~1.180\inc\api
- /IC:\WinDDK\6001~1.180\inc\ddk
- /IC:\WinDDK\6001~1.180\inc\ddk
- /IC:\WinDDK\6001~1.180\inc\crt
- /D_X86_=1
- /Di386=1
- /DSTD_CALL
- /DCONDITION_HANDLING=1
- /DNT_INST=0
- /DWIN32=100
- /D_NT1X_=100
- /DWINNT=1
- /D_WIN32_WINNT=0x0600
- /DWINVER=0x0600
- /D_WIN32_IE=0x0700
- /DWIN32_LEAN_AND_MEAN=1
- /DDEVL=1
- /DDBG=1
- /D__BUILDMACHINE__=WinDDK
- /DFPO=0
- /D_DLL=1
- /DNDEBUG
- /DDEPRECATE_DDK_FUNCTIONS=1
- /DMSC_NOOPT
- /DNTDDI_VERSION=0x06000100
- /c
- /Zc:wchar_t-
- /Zl
- /Zp8
- /Gy
- /Gm-
- -cbstring
- /W3
- /Gz
- /hotpatch
- /EHs-c-
- /GR-
- /GF
- /GS
- /Zi
- /Od
- /Oi
- /Oy-
- /Zi
- /Fde:\mycode\crarkk~1\crarksys\objchk_wlh_x86\i386\
- /DKMDF_MAJOR_VERSION=01
- /DKMDF_MINOR_VERSION=007
- /FIC:\WinDDK\6001~1.180\inc\api\warning.h
- .\hashtable.c 
-hashtable.c
- link.exe /out:e:\mycode\crarkk~1\crarksys\objchk_wlh_x86\i386\CrArkSys.sys /machine:ix86 @e:\mycode\crarkk~1\crarksys\objchk_wlh_x86\i386\lnk.rsp
-Microsoft (R) Incremental Linker Version 8.00.50727.278
+
+cl /Fo"e:\crark\crarksys\objchk_wlh_x86\i386/"
+   /FC
+   
+   
+   /Ii386
+   /I.
+   /Ie:\crark\crarksys\objchk_wlh_x86\i386
+   /IC:\WinDDK\6000\inc\api
+   /IC:\WinDDK\6000\inc\api
+   /IC:\WinDDK\6000\inc\ddk
+   /IC:\WinDDK\6000\inc\ddk
+   /IC:\WinDDK\6000\inc\crt
+   /D_X86_=1
+   /Di386=1
+   
+   /DSTD_CALL
+   /DCONDITION_HANDLING=1
+   
+   
+   /DNT_INST=0
+   /DWIN32=100
+   /D_NT1X_=100
+   /DWINNT=1
+   /D_WIN32_WINNT=0x0600
+   /DWINVER=0x0600
+   /D_WIN32_IE=0x0700
+   
+   
+   
+   /DWIN32_LEAN_AND_MEAN=1
+   /DDEVL=1
+   /DDBG=1
+   /D__BUILDMACHINE__=WinDDK
+   /DFPO=0
+   
+   
+   /D_DLL=1
+   /DNDEBUG
+   
+   /DDEPRECATE_DDK_FUNCTIONS=1
+   /DMSC_NOOPT
+   /DNTDDI_VERSION=0x06000000
+   
+   
+   
+   
+   /c
+   /Zc:wchar_t-
+   /Zl
+   /Zp8
+   /Gy
+   /Gm-
+   -cbstring
+   /W3
+   
+   /Gz
+   
+   
+   /hotpatch
+   /EHs-c-
+   
+   /GR-
+   /GF
+   /GS
+   /Zi
+   /Od
+   /Oi
+   
+   
+   /Oy-
+   /Zi
+   /Fde:\crark\crarksys\objchk_wlh_x86\i386\
+   
+   
+   -DKMDF_MAJOR_VERSION=01
+   -DKMDF_MINOR_VERSION=005
+   /FIC:\WinDDK\6000\inc\api\warning.h
+   
+   
+   .\procenum.c 
+
+procenum.c
+	link.exe /out:objchk_wlh_x86\i386\CrArkSys.sys /machine:ix86 @C:\DOCUME~1\Owner\LOCALS~1\Temp\nm402.tmp
+Microsoft (R) Incremental Linker Version 8.00.50727.220
 Copyright (C) Microsoft Corporation.  All rights reserved.
+
 /MERGE:_PAGE=PAGE 
 /MERGE:_TEXT=.text 
 /SECTION:INIT,d 
@@ -72,27 +102,31 @@ Copyright (C) Microsoft Corporation.  All rights reserved.
 /OPT:ICF 
 /IGNORE:4198,4010,4037,4039,4065,4070,4078,4087,4089,4221 
 /INCREMENTAL:NO 
+/FULLBUILD 
 /release 
 /NODEFAULTLIB 
 /WX 
 /debug 
-/debugtype:cv,fixup,pdata 
+/debugtype:cv 
 /version:6.0 
 /osversion:6.0 
 /functionpadmin:5 
 /safeseh 
+/debug 
+/debugtype:cv,fixup 
 /pdbcompress 
 /STACK:0x40000,0x1000 
 /driver 
 /base:0x10000 
 /subsystem:native,6.00 
 /entry:GsDriverEntry@8 
-/out:e:\mycode\crarkk~1\crarksys\objchk_wlh_x86\i386\CrArkSys.sys 
-e:\mycode\crarkk~1\crarksys\objchk_wlh_x86\i386\crarksys.obj 
-e:\mycode\crarkk~1\crarksys\objchk_wlh_x86\i386\hashtable.obj 
-e:\mycode\crarkk~1\crarksys\objchk_wlh_x86\i386\enviroment.obj 
-e:\mycode\crarkk~1\crarksys\objchk_wlh_x86\i386\ade32.obj 
-C:\WinDDK\6001~1.180\lib\wlh\i386\BufferOverflowK.lib 
-C:\WinDDK\6001~1.180\lib\wlh\i386\ntoskrnl.lib 
-C:\WinDDK\6001~1.180\lib\wlh\i386\hal.lib 
-C:\WinDDK\6001~1.180\lib\wlh\i386\wmilib.lib 
+/out:objchk_wlh_x86\i386\CrArkSys.sys 
+objchk_wlh_x86\i386\crarksys.obj 
+objchk_wlh_x86\i386\hashtable.obj 
+objchk_wlh_x86\i386\enviroment.obj 
+objchk_wlh_x86\i386\ade32.obj 
+objchk_wlh_x86\i386\procenum.obj 
+C:\WinDDK\6000\lib\wlh\i386\BufferOverflowK.lib 
+C:\WinDDK\6000\lib\wlh\i386\ntoskrnl.lib 
+C:\WinDDK\6000\lib\wlh\i386\hal.lib 
+C:\WinDDK\6000\lib\wlh\i386\wmilib.lib 

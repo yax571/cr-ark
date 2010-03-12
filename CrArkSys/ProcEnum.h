@@ -16,8 +16,13 @@ typedef struct _ObjectIdTable{
 //成功返回ObjectIdTable结构指针
 //失败返回NULL
 PObjectIdTable
-ProcessEnum();
+ProcessEnum(BOOLEAN ShowDeleting);
+
+
+PObjectIdTable
+ThreadEnum(PEPROCESS Process);
+
 
 //释放ObjectIdTable所占用的空间
 VOID
-ProcessFreeObjIdTable(PObjectIdTable ObjectIdT);
+FreeObjIdTable(PObjectIdTable ObjectIdT);
