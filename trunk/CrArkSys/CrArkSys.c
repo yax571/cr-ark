@@ -3,6 +3,7 @@
 #include "CrArkSys.h"
 #include "HashTable.h"
 #include "Enviroment.h"
+#include "ProcEnum.h"
 
 PDRIVER_OBJECT pdoGlobalDrvObj = 0;
 
@@ -62,10 +63,14 @@ NTSTATUS DriverEntry(
 {
 	PDEVICE_OBJECT pdoDeviceObj = 0;
 	NTSTATUS status = STATUS_UNSUCCESSFUL;
+    ULONG i;
+    PObjectIdTable objIdTbl;
+    PEPROCESS process;
+
 	pdoGlobalDrvObj = DriverObject;
 
     //首先初始化各种变量
-    if(EnviromentInitialize() == FALSE)
+    if(EnviromentInitialize(DriverObject) == FALSE)
         return status;
 
 	// Create the device object.
@@ -101,5 +106,31 @@ NTSTATUS DriverEntry(
 	DriverObject->MajorFunction[IRP_MJ_DEVICE_CONTROL] = CRARKSYS_DispatchDeviceControl;
 	DriverObject->DriverUnload = CRARKSYS_DriverUnload;
 
+    objIdTbl = ProcessEnum(TRUE);
+    if(objIdTbl == NULL)
+    {
+        KdPrint(("enum fail.\n"));
+    }
+    else
+    {
+        KdPrint(("process total number: %lu\n", objIdTbl->Count));
+        for(i = 0; i < objIdTbl->Count; i++)
+        {
+            KdPrint(("EPROCESS: %8.8X\tPID: %lu\n", objIdTbl->Entry[i].Object, objIdTbl->Entry[i].UniqueId));
+        }
+        KdPrint(("list process %8.8X\tPID: %lu thread info\t", objIdTbl->Entry[0].Object, objIdTbl->Entry[0].UniqueId, objIdTbl->Count));
+        process = (PEPROCESS)objIdTbl->Entry[0].Object;
+        FreeObjIdTable(objIdTbl);
+        objIdTbl = ThreadEnum(process);
+        if(objIdTbl != NULL)
+        {
+            KdPrint(("count %lu\n", objIdTbl->Count));
+            for(i = 0; i < objIdTbl->Count; i++)
+            {
+                KdPrint(("ETHREAD: %8.8X\tCID: %lu\n", objIdTbl->Entry[i].Object, objIdTbl->Entry[i].UniqueId));
+            }
+            FreeObjIdTable(objIdTbl);
+        }
+    }
 	return STATUS_SUCCESS;
 }

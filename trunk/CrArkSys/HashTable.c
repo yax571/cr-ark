@@ -103,9 +103,9 @@ HashTableMark(PHashTable T, ULONG Data)
     
     //²åÈë¹þÏ£±í
     T->Pool[0].Next = T->Pool[pointer].Next;
-    T->Pool[pointer].Next = T->FirstEntry[pointer];
+    T->Pool[pointer].Next = T->FirstEntry[hash];
     T->Pool[pointer].Data = Data;
-    T->FirstEntry[pointer] = pointer;
+    T->FirstEntry[hash] = pointer;
     T->Count++;
 
     return TRUE;
