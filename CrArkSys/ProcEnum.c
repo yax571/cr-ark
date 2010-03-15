@@ -3,6 +3,7 @@
 #include "HashTable.h"
 #include "Undocument.h"
 #include "Enviroment.h"
+#include "helper.h"
 
 typedef struct _EnumContext{
     union{
@@ -13,67 +14,6 @@ typedef struct _EnumContext{
     PObjectIdTable objIdT;
 }EnumContext, *PEnumContext;
 
-BOOLEAN 
-IsProcessDeleting(PVOID EProcess)
-{
-    ULONG signalState;
-
-    if(MmIsAddressValid((PUCHAR)EProcess + 0x04) == FALSE)
-        return TRUE;
-
-    signalState = *(PULONG)((PUCHAR)EProcess + 0x04);
-    return signalState > 0;
-}
-
-//kd> dt _OBJECT_HEADER
-// nt!_OBJECT_HEADER
-// +0x000 PointerCount     : Int4B
-// +0x004 HandleCount      : Int4B
-// +0x004 NextToFree       : Ptr32 Void
-// +0x008 Type             : Ptr32 _OBJECT_TYPE
-// +0x00c NameInfoOffset   : UChar
-// +0x00d HandleInfoOffset : UChar
-// +0x00e QuotaInfoOffset  : UChar
-// +0x00f Flags            : UChar
-// +0x010 ObjectCreateInfo : Ptr32 _OBJECT_CREATE_INFORMATION
-// +0x010 QuotaBlockCharged : Ptr32 Void
-// +0x014 SecurityDescriptor : Ptr32 Void
-// +0x018 Body             : _QUAD
-// PspCidTable记录的Object位于Body处, 所以 -0x10就是_OBJECT_TYPE指针
-BOOLEAN
-IsProcessObject(PVOID Object)
-{
-    PVOID type;
-    
-    if(MmIsAddressValid(Object) == FALSE)
-        return FALSE;
-    if(MmIsAddressValid((PUCHAR)Object - 0x10) == FALSE)
-        return FALSE; 
-
-    type = *(PVOID*)((PUCHAR)Object - 0x10);
-    if(type == *PsProcessType)
-        return TRUE;
-
-    return FALSE;
-}
-
-
-BOOLEAN
-IsThreadObject(PVOID Object)
-{
-    PVOID type;
-
-    if(MmIsAddressValid(Object) == FALSE)
-        return FALSE;
-    if(MmIsAddressValid((PUCHAR)Object - 0x10) == FALSE)
-        return FALSE; 
-
-    type = *(PVOID*)((PUCHAR)Object - 0x10);
-    if(type == *PsThreadType)
-        return TRUE;
-
-    return FALSE;
-}
 // kd> dt _HANDLE_TABLE_ENTRY
 // nt!_HANDLE_TABLE_ENTRY
 // +0x000 Object           : Ptr32 Void

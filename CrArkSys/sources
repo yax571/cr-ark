@@ -15,4 +15,6 @@ SOURCES=CrArkSys.c \
 		HashTable.c \
 		Enviroment.c \
 		ade32.c \
-		ProcEnum.c
+		ProcEnum.c \
+		Query.c \
+		helper.c

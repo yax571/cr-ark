@@ -12,14 +12,23 @@ ULONG EProcessSectionObjectOffset;
 ULONG EProcessImageFileNameOffset;
 ULONG EProcessThreadListHeadOffset;
 ULONG EProcessObjectTableOffset;
+ULONG EProcessSectionObjectOffset;
+ULONG EProcessPebOffset;
 
+//HandleTable结构中的偏移
 ULONG HandleTableHandleTableListOffset;
 ULONG HandleTableQuotaProcessOffset;
 ULONG HandleTableUniqueProcessIdOffset;
 
+//EThread结构中的偏移
 ULONG EThreadCidOffset;
 ULONG EThreadApcStateProcessOffset;
 ULONG EThreadThreadListEntryOffset;
+
+//SectionObject偏移
+ULONG SectionObjectSegmentOffset;
+ULONG SegmentObjectSubSecOffset;
+ULONG ControlAreaFilePointerOffset;
 
 //动态获得的地址
 PVOID SystemProcess;
@@ -213,14 +222,22 @@ EnviromentInitialize(PDRIVER_OBJECT DriverObject)
         EProcessSectionObjectOffset = 0x138;
         EProcessImageFileNameOffset = 0x174;
         EProcessThreadListHeadOffset = 0x190;
-        EProcessObjectTableOffset = 0x0c4; 
+        EProcessObjectTableOffset = 0x0c4;
+        EProcessSectionObjectOffset = 0x138;
+        EProcessPebOffset = 0x1b0;
         EThreadCidOffset = 0x1ec;
         EThreadApcStateProcessOffset = 0x044;
         EThreadThreadListEntryOffset = 0x22c;
         HandleTableHandleTableListOffset = 0x01c;
         HandleTableQuotaProcessOffset = 0x004;
         HandleTableUniqueProcessIdOffset = 0x08;
+        SectionObjectSegmentOffset = 0x014;
+        SegmentObjectSubSecOffset = 0x01c;
+        ControlAreaFilePointerOffset = 0x024;
         break;
+
+    default:
+        return FALSE;
     }
     
     //获得System进程
