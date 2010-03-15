@@ -13,6 +13,8 @@ extern ULONG EProcessSectionObjectOffset;
 extern ULONG EProcessImageFileNameOffset;
 extern ULONG EProcessThreadListHeadOffset;
 extern ULONG EProcessObjectTableOffset;
+extern ULONG EProcessSectionObjectOffset;
+extern ULONG EProcessPebOffset;
 
 //HANDLE_TABLE中的偏移
 extern ULONG HandleTableHandleTableListOffset;
@@ -23,6 +25,11 @@ extern ULONG HandleTableUniqueProcessIdOffset;
 extern ULONG EThreadCidOffset;
 extern ULONG EThreadApcStateProcessOffset;
 extern ULONG EThreadThreadListEntryOffset;
+
+
+extern ULONG SectionObjectSegmentOffset;
+extern ULONG SegmentObjectSubSecOffset;
+extern ULONG ControlAreaFilePointerOffset;
 
 //动态获得的地址
 extern PVOID SystemProcess;

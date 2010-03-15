@@ -88,6 +88,10 @@
 				RelativePath=".\ProcEnum.c"
 				>
 			</File>
+			<File
+				RelativePath=".\Query.c"
+				>
+			</File>
 			<Filter
 				Name="misc"
 				>
@@ -101,6 +105,10 @@
 				</File>
 				<File
 					RelativePath=".\HashTable.c"
+					>
+				</File>
+				<File
+					RelativePath=".\helper.c"
 					>
 				</File>
 			</Filter>
@@ -120,6 +128,10 @@
 				RelativePath=".\ProcEnum.h"
 				>
 			</File>
+			<File
+				RelativePath=".\Query.h"
+				>
+			</File>
 			<Filter
 				Name="misc"
 				>
@@ -133,6 +145,10 @@
 				</File>
 				<File
 					RelativePath=".\HashTable.h"
+					>
+				</File>
+				<File
+					RelativePath=".\helper.h"
 					>
 				</File>
 				<File

@@ -88,10 +88,10 @@ cl /Fo"e:\crark\crarksys\objchk_wlh_x86\i386/"
    /FIC:\WinDDK\6000\inc\api\warning.h
    
    
-   .\procenum.c 
+   .\helper.c 
 
-procenum.c
-	link.exe /out:objchk_wlh_x86\i386\CrArkSys.sys /machine:ix86 @C:\DOCUME~1\Owner\LOCALS~1\Temp\nm402.tmp
+helper.c
+	link.exe /out:objchk_wlh_x86\i386\CrArkSys.sys /machine:ix86 @C:\DOCUME~1\Owner\LOCALS~1\Temp\nm28D.tmp
 Microsoft (R) Incremental Linker Version 8.00.50727.220
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
@@ -126,6 +126,8 @@ objchk_wlh_x86\i386\hashtable.obj
 objchk_wlh_x86\i386\enviroment.obj 
 objchk_wlh_x86\i386\ade32.obj 
 objchk_wlh_x86\i386\procenum.obj 
+objchk_wlh_x86\i386\query.obj 
+objchk_wlh_x86\i386\helper.obj 
 C:\WinDDK\6000\lib\wlh\i386\BufferOverflowK.lib 
 C:\WinDDK\6000\lib\wlh\i386\ntoskrnl.lib 
 C:\WinDDK\6000\lib\wlh\i386\hal.lib 

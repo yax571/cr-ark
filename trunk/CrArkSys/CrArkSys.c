@@ -4,6 +4,7 @@
 #include "HashTable.h"
 #include "Enviroment.h"
 #include "ProcEnum.h"
+#include "Query.h"
 
 PDRIVER_OBJECT pdoGlobalDrvObj = 0;
 
@@ -66,6 +67,7 @@ NTSTATUS DriverEntry(
     ULONG i;
     PObjectIdTable objIdTbl;
     PEPROCESS process;
+    PProcessNameInfo processNameInfo;
 
 	pdoGlobalDrvObj = DriverObject;
 
@@ -117,20 +119,14 @@ NTSTATUS DriverEntry(
         for(i = 0; i < objIdTbl->Count; i++)
         {
             KdPrint(("EPROCESS: %8.8X\tPID: %lu\n", objIdTbl->Entry[i].Object, objIdTbl->Entry[i].UniqueId));
-        }
-        KdPrint(("list process %8.8X\tPID: %lu thread info\t", objIdTbl->Entry[0].Object, objIdTbl->Entry[0].UniqueId, objIdTbl->Count));
-        process = (PEPROCESS)objIdTbl->Entry[0].Object;
-        FreeObjIdTable(objIdTbl);
-        objIdTbl = ThreadEnum(process);
-        if(objIdTbl != NULL)
-        {
-            KdPrint(("count %lu\n", objIdTbl->Count));
-            for(i = 0; i < objIdTbl->Count; i++)
+            processNameInfo = QueryProcessName(objIdTbl->Entry[i].Object);
+            if(processNameInfo != NULL)
             {
-                KdPrint(("ETHREAD: %8.8X\tCID: %lu\n", objIdTbl->Entry[i].Object, objIdTbl->Entry[i].UniqueId));
+                KdPrint(("\t ImageName: %s\tFullPath: %s\n", processNameInfo->ImageName, processNameInfo->FullPath));
+                ExFreePool(processNameInfo);
             }
-            FreeObjIdTable(objIdTbl);
         }
+        FreeObjIdTable(objIdTbl);
     }
 	return STATUS_SUCCESS;
 }
