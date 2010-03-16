@@ -3,6 +3,10 @@
 #include "ade32.h"
 #include "Undocument.h"
 
+//KRPCESS偏移
+ULONG KProcessBasePriorityOffset;
+ULONG KProcessStateOffset;
+
 //EPROCESS结构中的偏移
 ULONG EProcessUniqueProcessIdOffset;
 ULONG EProcessActiveProcessLinksOffset;
@@ -14,16 +18,26 @@ ULONG EProcessThreadListHeadOffset;
 ULONG EProcessObjectTableOffset;
 ULONG EProcessSectionObjectOffset;
 ULONG EProcessPebOffset;
+ULONG EProcessCreateTimeOffset;
+ULONG EProcessDebugPortOffset;
+ULONG EProcessInheritedFromUniqueProcessIdOffset;
+
 
 //HandleTable结构中的偏移
 ULONG HandleTableHandleTableListOffset;
 ULONG HandleTableQuotaProcessOffset;
 ULONG HandleTableUniqueProcessIdOffset;
+ULONG HandleTableHandleCountOffset;
 
 //EThread结构中的偏移
 ULONG EThreadCidOffset;
 ULONG EThreadApcStateProcessOffset;
 ULONG EThreadThreadListEntryOffset;
+ULONG EThreadStartAddressOffset;
+ULONG EThreadWin32StartAddressOffset;
+ULONG KThreadContextSwitchesOffset;
+ULONG KThreadBasePriorityOffset;
+ULONG KThreadStateOffset;
 
 //SectionObject偏移
 ULONG SectionObjectSegmentOffset;
@@ -217,20 +231,34 @@ EnviromentInitialize(PDRIVER_OBJECT DriverObject)
     case 2600:      //winxp
         EProcessUniqueProcessIdOffset = 0x084;
         EProcessActiveProcessLinksOffset = 0x088;
-        EProcessUniqueProcessIdOffset = 0x84;
         EProcessObjectTableOffset = 0x0c4;
         EProcessSectionObjectOffset = 0x138;
         EProcessImageFileNameOffset = 0x174;
         EProcessThreadListHeadOffset = 0x190;
         EProcessObjectTableOffset = 0x0c4;
-        EProcessSectionObjectOffset = 0x138;
         EProcessPebOffset = 0x1b0;
+        EProcessCreateTimeOffset = 0x070;
+        EProcessDebugPortOffset = 0x0bc;
+        EProcessInheritedFromUniqueProcessIdOffset = 0x14c;
+
         EThreadCidOffset = 0x1ec;
         EThreadApcStateProcessOffset = 0x044;
         EThreadThreadListEntryOffset = 0x22c;
+        EThreadStartAddressOffset = 0x224;
+        EThreadWin32StartAddressOffset = 0x228;
+
+        KThreadBasePriorityOffset = 0x6c;
+        KThreadContextSwitchesOffset = 0x04c;
+        KThreadStateOffset = 0x02d;
+
+        KProcessBasePriorityOffset = 0x062;
+        KProcessStateOffset = 0x065;
+
         HandleTableHandleTableListOffset = 0x01c;
         HandleTableQuotaProcessOffset = 0x004;
         HandleTableUniqueProcessIdOffset = 0x08;
+        HandleTableHandleCountOffset = 0x03c;
+
         SectionObjectSegmentOffset = 0x014;
         SegmentObjectSubSecOffset = 0x01c;
         ControlAreaFilePointerOffset = 0x024;
