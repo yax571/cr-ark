@@ -68,6 +68,7 @@ NTSTATUS DriverEntry(
     PObjectIdTable objIdTbl;
     PEPROCESS process;
     PProcessNameInfo processNameInfo;
+    PProcessModuleList kernelModList, r3modList;
 
 	pdoGlobalDrvObj = DriverObject;
 

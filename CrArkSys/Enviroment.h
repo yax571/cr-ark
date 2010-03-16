@@ -4,6 +4,10 @@
 BOOLEAN
 EnviromentInitialize(PDRIVER_OBJECT DriverObject);
 
+//KRPCESS偏移
+extern ULONG KProcessBasePriorityOffset;
+extern ULONG KProcessStateOffset;
+
 //EPROCESS结构中的偏移
 extern ULONG EProcessUniqueProcessIdOffset;
 extern ULONG EProcessActiveProcessLinksOffset;
@@ -15,17 +19,27 @@ extern ULONG EProcessThreadListHeadOffset;
 extern ULONG EProcessObjectTableOffset;
 extern ULONG EProcessSectionObjectOffset;
 extern ULONG EProcessPebOffset;
+extern ULONG EProcessCreateTimeOffset;
+extern ULONG EProcessDebugPortOffset;
+extern ULONG EProcessInheritedFromUniqueProcessIdOffset;
 
 //HANDLE_TABLE中的偏移
 extern ULONG HandleTableHandleTableListOffset;
 extern ULONG HandleTableQuotaProcessOffset;
 extern ULONG HandleTableUniqueProcessIdOffset;
+extern ULONG HandleTableHandleCountOffset;
 
 //ETHREAD结构中的偏移
 extern ULONG EThreadCidOffset;
 extern ULONG EThreadApcStateProcessOffset;
 extern ULONG EThreadThreadListEntryOffset;
+extern ULONG EThreadStartAddressOffset;
+extern ULONG EThreadWin32StartAddressOffset;
 
+//KTHREAD
+extern ULONG KThreadContextSwitchesOffset;
+extern ULONG KThreadBasePriorityOffset;
+extern ULONG KThreadStateOffset;
 
 extern ULONG SectionObjectSegmentOffset;
 extern ULONG SegmentObjectSubSecOffset;

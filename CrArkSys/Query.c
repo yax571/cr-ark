@@ -239,3 +239,217 @@ QueryProcessName(PEPROCESS Process)
     ExFreePool(procNameInfo);
     return NULL;
 }
+
+
+//这个函数返回LDR_DATA_TABLE_ENTRY列表
+//R3程序不能直接使用这个列表
+PProcessModuleList
+QueryProcessModuleList(PEPROCESS Process)
+{
+    PLIST_ENTRY current, head;
+    PUCHAR magic;
+    BOOLEAN attached;
+    KAPC_STATE apcState;
+    PProcessModuleList processModuleList;
+    BOOLEAN success;
+    KIRQL oldIrql;
+
+    if(!IsProcessObject(Process) ||
+        IsProcessDeleting(Process))
+    {
+        KdPrint(("Process object not valid.\n"));
+        return NULL;
+    }
+
+    processModuleList = ExAllocatePoolWithTag(PagedPool,
+                                              sizeof(ProcessModuleList),
+                                              'pmls');
+    RtlZeroMemory(processModuleList, sizeof(ProcessModuleList));
+
+    //system进程特殊处理
+    if(Process == SystemProcess)
+    {
+        oldIrql = KeRaiseIrqlToDpcLevel();
+
+        head = PsLoadedModuleList;
+        current = PsLoadedModuleList->Flink;
+
+        while(current != head)
+        {
+            processModuleList->LdrDataTable[processModuleList->Count] = 
+                CONTAINING_RECORD(current, LDR_DATA_TABLE_ENTRY, InLoadOrderLinks);
+            processModuleList->Count++;
+            current = current->Flink;
+        }
+
+        KeLowerIrql(oldIrql);
+        return processModuleList;
+    }
+
+    //普通进程的处理
+    attached = FALSE;
+    success = FALSE;
+    if(Process != PsGetCurrentProcess())
+    {
+        KeStackAttachProcess(Process, &apcState);
+        attached = TRUE;
+    }
+
+    try {
+        //magic = EPROCESS->Peb
+        magic = *(PUCHAR*)((ULONG)Process + EProcessPebOffset);
+        //magic = Peb->Ldr
+        ProbeForRead(magic + 0x0c, 4, 4);
+        magic = *(PUCHAR*)(magic + 0x0c);
+        //magic = Ldr.InLoadOrderModuleList
+        magic = magic + 0x0c;
+
+        ProbeForRead(magic, sizeof(LIST_ENTRY), 4);
+        head = (PLIST_ENTRY)magic;
+        current = head->Flink;
+
+        while(current != head)
+        {
+            processModuleList->LdrDataTable[processModuleList->Count] = 
+                CONTAINING_RECORD(current, LDR_DATA_TABLE_ENTRY, InLoadOrderLinks);
+            processModuleList->Count++;
+            current = current->Flink;
+        }
+
+        success = TRUE;
+    } except(EXCEPTION_EXECUTE_HANDLER) {
+        success = FALSE;
+    }
+
+    //清理
+    if(attached)
+        KeUnstackDetachProcess(&apcState);
+
+    if(!success)
+    {
+        ExFreePool(processModuleList);
+        return NULL;
+    }
+
+    return processModuleList;
+}
+
+//根据LDR_DATA_TABLE_ENTRY结构获得模块名称
+PModuleNameInfo
+QueryModuleNameInfo(PEPROCESS Process,
+                    PVOID LdrDataTableEntry)
+{
+    PLDR_DATA_TABLE_ENTRY entry;
+    BOOLEAN attached;
+    KAPC_STATE apcState;
+    PModuleNameInfo moduleNameInfo;
+
+    entry = (PLDR_DATA_TABLE_ENTRY)LdrDataTableEntry;
+
+    //验证
+    if(!IsProcessObject(Process) ||
+        IsProcessDeleting(Process))
+        return NULL;
+
+    //申请空间
+    moduleNameInfo = ExAllocatePoolWithTag(PagedPool,
+                                           sizeof(ModuleNameInfo),
+                                           'mnin');
+    if(!moduleNameInfo)
+        return NULL;
+    
+    //是否在目标地址空间
+    if(Process != SystemProcess &&
+       Process != PsGetCurrentProcess())
+    {
+        KeStackAttachProcess(Process, &apcState);
+        attached = TRUE;
+    }
+
+    //复制地址
+    moduleNameInfo->Length = entry->FullDllName.Length;
+    RtlCopyMemory(moduleNameInfo->FullPath, 
+                  entry->FullDllName.Buffer,
+                  entry->FullDllName.Length);
+    moduleNameInfo->FullPath[moduleNameInfo->Length] = 0;
+
+    if(attached)
+        KeUnstackDetachProcess(&apcState);
+    return moduleNameInfo;
+}
+
+
+//查询进程信息
+PProcessInfo
+QueryProcessInfo(PEPROCESS Process)
+{
+    PProcessInfo processInfo;
+    PUCHAR magic;
+
+    if(!IsProcessObject(Process) ||
+        IsProcessDeleting(Process))
+        return NULL;
+
+    processInfo = ExAllocatePoolWithTag(PagedPool,
+                                        sizeof(ProcessInfo),
+                                        'prin');
+    if(!processInfo)
+        return NULL;
+
+    RtlZeroMemory(processInfo, sizeof(ProcessInfo));
+
+    magic = (PUCHAR)Process;
+    processInfo->BasePriority = *(PCHAR)(magic + KProcessBasePriorityOffset);
+    processInfo->CreateTime = *(PLARGE_INTEGER)(magic + EProcessCreateTimeOffset);
+    processInfo->DebugPort = *(PULONG)(magic + EProcessDebugPortOffset);
+    processInfo->InheritedFromUniqueProcessId = *(PULONG)(magic + EProcessInheritedFromUniqueProcessIdOffset);
+    processInfo->Peb = *(PVOID*)(magic + EProcessPebOffset);
+    processInfo->State = *(PUCHAR)(magic + KProcessStateOffset);
+    processInfo->UniqueProcessId = *(PULONG)(magic + EProcessUniqueProcessIdOffset);
+    
+    //Handle_TABLE
+    magic = *(PUCHAR*)(magic + EProcessObjectTableOffset);
+    processInfo->HandleCount = *(PULONG)(magic + HandleTableHandleCountOffset);
+
+    return processInfo;
+}
+
+//查询线程信息
+PThreadInfo
+QueryThreadInfo(PETHREAD Thread)
+{
+    PEPROCESS process;
+    PUCHAR magic;
+    PThreadInfo threadInfo;
+    PVOID startAddress;
+
+    //常规检查
+    if(!IsThreadObject(Thread))
+        return NULL;
+
+    process = IoThreadToProcess(Thread);
+    if(IsProcessDeleting(process))
+        return NULL;
+
+    threadInfo = ExAllocatePoolWithTag(PagedPool,
+                                       sizeof(ThreadInfo),
+                                       'thin');
+    if(!threadInfo)
+        return NULL;
+
+    RtlZeroMemory(threadInfo, sizeof(ThreadInfo));
+    magic = (PUCHAR)Thread;
+
+    threadInfo->BasePriority = *(PCHAR)(magic + KThreadBasePriorityOffset);
+    threadInfo->ContextSwitches = *(PULONG)(magic + KThreadContextSwitchesOffset);
+    threadInfo->EThread = magic;
+    threadInfo->State = *(PUCHAR)(magic + KThreadStateOffset);
+    threadInfo->Tid = *(PULONG)(magic + EThreadCidOffset + sizeof(ULONG));
+
+    startAddress = *(PVOID*)(magic + EThreadWin32StartAddressOffset);
+    if(startAddress == NULL)
+        startAddress = *(PVOID*)(magic + EThreadStartAddressOffset);
+    threadInfo->StartAddress = startAddress;
+
+    return threadInfo;
+}
