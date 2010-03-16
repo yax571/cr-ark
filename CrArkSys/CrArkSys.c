@@ -79,6 +79,7 @@ NTSTATUS DriverEntry(
     if(EnviromentInitialize(DriverObject) == FALSE)
         return status;
 
+    
 	// Create the device object.
 	if(!NT_SUCCESS(status = IoCreateDevice(
 		DriverObject,
@@ -166,5 +167,6 @@ NTSTATUS DriverEntry(
         }
         FreeObjIdTable(objIdTbl);
     }
+EnviromentSpecialInitialize(NULL);
 	return STATUS_SUCCESS;
 }
