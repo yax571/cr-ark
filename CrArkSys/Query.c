@@ -265,6 +265,7 @@ QueryProcessModuleList(PEPROCESS Process)
                                               sizeof(ProcessModuleList),
                                               'pmls');
     RtlZeroMemory(processModuleList, sizeof(ProcessModuleList));
+    processModuleList->Process = Process;
 
     //system进程特殊处理
     if(Process == SystemProcess)
@@ -335,14 +336,16 @@ QueryProcessModuleList(PEPROCESS Process)
 }
 
 //根据LDR_DATA_TABLE_ENTRY结构获得模块名称
-PModuleNameInfo
-QueryModuleNameInfo(PEPROCESS Process,
-                    PVOID LdrDataTableEntry)
+PModuleInfo
+QueryModuleInfo(PEPROCESS Process,
+                PVOID LdrDataTableEntry)
 {
     PLDR_DATA_TABLE_ENTRY entry;
     BOOLEAN attached;
     KAPC_STATE apcState;
-    PModuleNameInfo moduleNameInfo;
+    PModuleInfo moduleInfo = NULL;
+    ANSI_STRING ansiString;
+    NTSTATUS status;
 
     entry = (PLDR_DATA_TABLE_ENTRY)LdrDataTableEntry;
 
@@ -352,13 +355,14 @@ QueryModuleNameInfo(PEPROCESS Process,
         return NULL;
 
     //申请空间
-    moduleNameInfo = ExAllocatePoolWithTag(PagedPool,
-                                           sizeof(ModuleNameInfo),
-                                           'mnin');
-    if(!moduleNameInfo)
+    moduleInfo = ExAllocatePoolWithTag(PagedPool,
+                                       sizeof(ModuleInfo),
+                                       'mnin');
+    if(!moduleInfo)
         return NULL;
     
     //是否在目标地址空间
+    attached = FALSE;
     if(Process != SystemProcess &&
        Process != PsGetCurrentProcess())
     {
@@ -366,16 +370,28 @@ QueryModuleNameInfo(PEPROCESS Process,
         attached = TRUE;
     }
 
-    //复制地址
-    moduleNameInfo->Length = entry->FullDllName.Length;
-    RtlCopyMemory(moduleNameInfo->FullPath, 
-                  entry->FullDllName.Buffer,
-                  entry->FullDllName.Length);
-    moduleNameInfo->FullPath[moduleNameInfo->Length] = 0;
+    //从用户空间复制模块信息
+    try {
+        ansiString.Buffer = moduleInfo->FullPath;
+        ansiString.Length = 0;
+        ansiString.MaximumLength = FULL_PATH_LENGTH;
+        status = RtlUnicodeStringToAnsiString(&ansiString,
+                                              &entry->FullDllName,
+                                              FALSE);
+        if(NT_SUCCESS(status))
+            moduleInfo->FullPath[ansiString.Length] = 0;
+
+        moduleInfo->BaseAddress = (ULONG)entry->DllBase;
+        moduleInfo->EntryPoint = (ULONG)entry->EntryPoint;
+        moduleInfo->SizeOfImage = entry->SizeOfImage;
+    }except(EXCEPTION_EXECUTE_HANDLER){
+        ExFreePool(moduleInfo);
+        moduleInfo = NULL;
+    }
 
     if(attached)
         KeUnstackDetachProcess(&apcState);
-    return moduleNameInfo;
+    return moduleInfo;
 }
 
 
@@ -422,6 +438,13 @@ QueryThreadInfo(PETHREAD Thread)
     PUCHAR magic;
     PThreadInfo threadInfo;
     PVOID startAddress;
+    PProcessModuleList processModList = NULL;
+    BOOLEAN attached = FALSE;
+    KAPC_STATE apcState;
+    PLDR_DATA_TABLE_ENTRY entry;
+    ULONG i;
+    ANSI_STRING ansiString;
+    NTSTATUS status;
 
     //常规检查
     if(!IsThreadObject(Thread))
@@ -451,5 +474,54 @@ QueryThreadInfo(PETHREAD Thread)
         startAddress = *(PVOID*)(magic + EThreadStartAddressOffset);
     threadInfo->StartAddress = startAddress;
 
+    //获得模块名称
+    //先写个默认名称
+    RtlCopyMemory(threadInfo->ImagePath, "(unknown)", 9);
+    threadInfo->ImagePath[9] = 0;
+    
+    //首先遍历LDR_DATA_TABLE_ENTRY获得线程所在模块
+    processModList = QueryProcessModuleList(process);
+    if(!processModList)
+        goto _QueryThreadInfoExit;
+    
+    //决定是否挂靠
+    attached = FALSE;
+    if(process != SystemProcess &&
+        process != PsGetCurrentProcess())
+    {
+        KeStackAttachProcess(process, &apcState);
+        attached = TRUE;
+    }
+
+    //比较起始地址在哪个模块中
+    for(i = 0; i < processModList->Count; i++)
+    {
+        entry = (PLDR_DATA_TABLE_ENTRY)processModList->LdrDataTable[i];
+        try {
+            //得到地址了
+            if(startAddress >= entry->DllBase &&
+                startAddress < (PVOID)((PUCHAR)entry->DllBase + entry->SizeOfImage))
+            {
+                ansiString.Buffer = threadInfo->ImagePath;
+                ansiString.Length = 0;
+                ansiString.MaximumLength = FULL_PATH_LENGTH;
+                status = RtlUnicodeStringToAnsiString(&ansiString,
+                                                      &entry->FullDllName,
+                                                      FALSE);
+                if(NT_SUCCESS(status))
+                    ansiString.Buffer[ansiString.Length] = 0;
+                break;
+            }
+        }except(EXCEPTION_EXECUTE_HANDLER) {
+
+        }
+    }
+
+_QueryThreadInfoExit:
+    if(attached)
+        KeUnstackDetachProcess(&apcState);
+
+    if(processModList)
+        ExFreePool(processModList);
     return threadInfo;
 }

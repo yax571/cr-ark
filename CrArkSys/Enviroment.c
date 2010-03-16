@@ -285,3 +285,9 @@ EnviromentInitialize(PDRIVER_OBJECT DriverObject)
 
     return TRUE;
 }
+
+BOOLEAN
+EnviromentSpecialInitialize(HANDLE ThreadHandle)
+{
+    return FALSE;
+}

@@ -21,3 +21,12 @@ ConvertDevicePathToDosPath(
                            IN POOL_TYPE PoolType,
                            OUT PUNICODE_STRING OutBuffer
                            );
+
+//挂钩Function函数至FakeFunction
+//JmpBuffer是FakeFunction跳转回Function的跳转缓冲区
+BOOLEAN
+HookProcess(PVOID Function, PVOID FakeFunction, PUCHAR JmpBuffer);
+
+//打开或关闭内存写保护
+VOID
+EnableWritePretect(BOOLEAN Enable);

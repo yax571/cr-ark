@@ -11,14 +11,17 @@ typedef struct _ProcessNameInfo {
 }ProcessNameInfo, *PProcessNameInfo;
 
 typedef struct _ProcessModuleList {
+    PVOID Process;
     USHORT Count;
     PVOID LdrDataTable[65535];
 }ProcessModuleList, *PProcessModuleList;
 
-typedef struct _ModuleNameInfo {
-    ULONG Length;
+typedef struct _ModuleInfo {
+    ULONG BaseAddress;
+    ULONG EntryPoint;
+    ULONG SizeOfImage;
     char FullPath[FULL_PATH_LENGTH];
-}ModuleNameInfo, *PModuleNameInfo;
+}ModuleInfo, *PModuleInfo;
 
 typedef struct _ProcessInfo {
     char BasePriority;
@@ -38,6 +41,7 @@ typedef struct _ThreadInfo {
     char BasePriority;
     PVOID StartAddress;
     UCHAR State;
+    char ImagePath[FULL_PATH_LENGTH];
 }ThreadInfo, *PThreadInfo;
 
 
@@ -48,14 +52,14 @@ QueryProcessName(PEPROCESS Process);
 
 //这个函数返回LDR_DATA_TABLE_ENTRY列表
 //R3程序不能直接使用这个列表
-//要配合QueryModuleNameInfo使用
+//要配合QueryModuleInfo使用
 PProcessModuleList
 QueryProcessModuleList(PEPROCESS Process);
 
 //根据LDR_DATA_TABLE_ENTRY结构获得模块名称
-PModuleNameInfo
-QueryModuleNameInfo(PEPROCESS Process,
-                    PVOID LdrDataTableEntry);
+PModuleInfo
+QueryModuleInfo(PEPROCESS Process,
+                PVOID LdrDataTableEntry);
 
 //查询进程信息
 PProcessInfo
