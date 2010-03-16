@@ -703,7 +703,7 @@ ULONG ade32_get_code_length(PVOID opcode, ULONG length)
     offset = 0;
     while(offset < length)
     {
-        offset += ade32_disasm(opcode);
+        offset += ade32_disasm((PUCHAR)opcode + offset);
     }
 
     return offset;

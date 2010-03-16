@@ -1,0 +1,3 @@
+errors in directory e:\mycode\crarkk~1\crarksys
+e:\mycode\crarkk~1\crarksys\enviroment.obj : error LNK2019: unresolved external symbol __imp__ZwTerminateThread@8 referenced in function _EnviromentSpecialInitialize@4
+e:\mycode\crarkk~1\crarksys\objchk_wlh_x86\i386\crarksys.sys : error LNK1120: 1 unresolved externals

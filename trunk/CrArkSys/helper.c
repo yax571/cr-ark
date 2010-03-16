@@ -198,7 +198,7 @@ EnableWritePretect(BOOLEAN Enable)
 //挂钩Function函数至FakeFunction
 //JmpBuffer是FakeFunction跳转回Function的跳转缓冲区
 BOOLEAN
-HookProcess(PVOID Function, PVOID FakeFunction, PUCHAR JmpBuffer)
+HookFunction(PVOID Function, PVOID FakeFunction, PUCHAR JmpBuffer)
 {
     ULONG length;
     UCHAR jmpCode[5];
@@ -219,6 +219,22 @@ HookProcess(PVOID Function, PVOID FakeFunction, PUCHAR JmpBuffer)
 
     EnableWritePretect(FALSE);
     RtlCopyMemory(Function, jmpCode, 5);
+    EnableWritePretect(TRUE);
+
+    return TRUE;
+}
+
+BOOLEAN
+UnhookFunction(PVOID Function, PUCHAR JmpBuffer)
+{
+    ULONG length;
+
+    length = ade32_get_code_length(JmpBuffer, 5);
+    if(length == 0)
+        return FALSE;
+
+    EnableWritePretect(FALSE);
+    RtlCopyMemory(Function, JmpBuffer, length);
     EnableWritePretect(TRUE);
 
     return TRUE;

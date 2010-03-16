@@ -2,6 +2,7 @@
 #include "Enviroment.h"
 #include "ade32.h"
 #include "Undocument.h"
+#include "helper.h"
 
 //KRPCESS偏移
 ULONG KProcessBasePriorityOffset;
@@ -53,6 +54,13 @@ PLIST_ENTRY ActiveProcessLinksHead;
 PLIST_ENTRY PsLoadedModuleList;
 PLIST_ENTRY HandleTableListHead;
 
+//用于终止线程的APC-Routine
+PVOID PsExitSpecialApc;
+PVOID PspExitApcRundown;
+PVOID PspExitNormalApc;
+
+PETHREAD EThreadForGetApc;
+UCHAR KeInsertQueueApcJumpBack[20];
 
 //搜索PsLookProcessThreadByCide函数, 取得未导出的PspCidTable地址
 BOOLEAN
@@ -286,8 +294,75 @@ EnviromentInitialize(PDRIVER_OBJECT DriverObject)
     return TRUE;
 }
 
+
+BOOLEAN
+FakeKeInsertQueueApc (
+                  __inout PRKAPC Apc,
+                  __in_opt PVOID SystemArgument1,
+                  __in_opt PVOID SystemArgument2,
+                  __in KPRIORITY Increment
+                  )
+{
+    ULONG retVal;
+
+    //获取PsExitSpecialApc、PspExitApcRundown、PspExitNormalApc
+    if(EThreadForGetApc != NULL &&
+       Apc->ApcMode == KernelMode &&
+       Apc->NormalContext == (PVOID)0x12345678 &&
+       Apc->Thread == (PKTHREAD)EThreadForGetApc &&
+       Apc->ApcStateIndex == 0 /*OriginalApcEnvironment*/)
+    {
+        PsExitSpecialApc = (PVOID)Apc->KernelRoutine;
+        PspExitApcRundown = (PVOID)Apc->RundownRoutine;
+        PspExitNormalApc = (PVOID)Apc->NormalRoutine;
+
+        //获得成功后取消钩子
+        EThreadForGetApc = NULL;
+        UnhookFunction(KeInsertQueueApc, KeInsertQueueApcJumpBack);
+    }
+    
+    __asm {
+        push Increment;
+        push SystemArgument2;
+        push SystemArgument1;
+        push Apc;
+        lea eax, KeInsertQueueApcJumpBack;
+        call eax;
+        mov retVal, eax;
+    }
+
+    return retVal > 0;
+}
+
+
 BOOLEAN
 EnviromentSpecialInitialize(HANDLE ThreadHandle)
 {
+    BOOLEAN retVal;
+    PETHREAD thread;
+    NTSTATUS status;
+
+    status = ObReferenceObjectByHandle(ThreadHandle,
+                                       THREAD_TERMINATE,
+                                       NULL,
+                                       KernelMode,
+                                       &thread,
+                                       NULL);
+    if(!NT_SUCCESS(status))
+        return FALSE;
+    ObDereferenceObject(thread);
+
+    EThreadForGetApc = thread;
+
+    retVal = HookFunction(KeInsertQueueApc, 
+                          FakeKeInsertQueueApc, 
+                          KeInsertQueueApcJumpBack);
+    if(!retVal)
+    {
+        EThreadForGetApc = NULL;
+        return retVal;
+    }
+
+    ZwTerminateThread(ThreadHandle, 0x12345678);
     return FALSE;
 }

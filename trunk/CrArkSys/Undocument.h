@@ -70,3 +70,20 @@ typedef struct _SYSTEM_MODULE_INFORMATION { // Information Class 11
     USHORT ModuleNameOffset;
     CHAR ImageName[256];
 } SYSTEM_MODULE_INFORMATION, *PSYSTEM_MODULE_INFORMATION;
+
+NTKERNELAPI
+BOOLEAN
+KeInsertQueueApc (
+                  __inout PRKAPC Apc,
+                  __in_opt PVOID SystemArgument1,
+                  __in_opt PVOID SystemArgument2,
+                  __in KPRIORITY Increment
+                  );
+
+NTSYSAPI
+NTSTATUS
+NTAPI
+ZwTerminateThread (
+                   __in_opt HANDLE ThreadHandle,
+                   __in NTSTATUS ExitStatus
+                   );

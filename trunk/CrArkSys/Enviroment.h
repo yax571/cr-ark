@@ -4,6 +4,9 @@
 BOOLEAN
 EnviromentInitialize(PDRIVER_OBJECT DriverObject);
 
+BOOLEAN
+EnviromentSpecialInitialize(HANDLE ThreadHandle);
+
 //KRPCESSÆ«ÒÆ
 extern ULONG KProcessBasePriorityOffset;
 extern ULONG KProcessStateOffset;
