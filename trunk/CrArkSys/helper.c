@@ -1,6 +1,7 @@
 #include <ntifs.h>
 #include <string.h>
 #include "Undocument.h"
+#include "ade32.h"
 
 
 BOOLEAN 
@@ -163,4 +164,62 @@ ConvertDevicePathToDosPath(
 _ConvertDevicePathToDosPathExit:
     ExFreePool(devName.Buffer);
     return ret;
+}
+
+
+//打开或关闭内存写保护
+VOID
+EnableWritePretect(BOOLEAN Enable)
+{
+    if(Enable)
+    {
+        __asm {
+            push eax;
+            mov eax, cr0;
+            or eax, 10000h;
+            mov cr0, eax;
+            pop eax;
+            sti;
+        }
+    }
+    else
+    {
+        __asm {
+            cli;
+            push eax;
+            mov eax, cr0;
+            and eax, 0FFFEFFFFh;
+            mov cr0, eax;
+            pop eax;
+        }
+    }
+}
+
+//挂钩Function函数至FakeFunction
+//JmpBuffer是FakeFunction跳转回Function的跳转缓冲区
+BOOLEAN
+HookProcess(PVOID Function, PVOID FakeFunction, PUCHAR JmpBuffer)
+{
+    ULONG length;
+    UCHAR jmpCode[5];
+    PUCHAR temp;
+
+    length = ade32_get_code_length(Function, 5);
+    if(length == 0)
+        return FALSE;
+
+    temp = (PUCHAR)Function + length;
+    RtlCopyMemory(JmpBuffer, Function, length);
+
+    JmpBuffer[length] = 0xe9;
+    *(PULONG)(JmpBuffer + length + 1) = ((PUCHAR)Function + length - (JmpBuffer + length) - 5);
+
+    jmpCode[0] = 0xe9;
+    *(PULONG)(&jmpCode[1]) = (ULONG)((PUCHAR)FakeFunction - (PUCHAR)Function - 5);
+
+    EnableWritePretect(FALSE);
+    RtlCopyMemory(Function, jmpCode, 5);
+    EnableWritePretect(TRUE);
+
+    return TRUE;
 }
