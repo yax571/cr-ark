@@ -90,6 +90,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Dispatch.c"
+				>
+			</File>
+			<File
 				RelativePath=".\ProcEnum.c"
 				>
 			</File>
@@ -123,6 +127,10 @@
 			>
 			<File
 				RelativePath=".\CrArkSys.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Dispatch.h"
 				>
 			</File>
 			<File

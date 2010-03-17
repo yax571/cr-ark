@@ -1,11 +1,13 @@
 #include <ntddk.h>
 #include <string.h>
 #include "CrArkSys.h"
+#include "Dispatch.h"
 #include "HashTable.h"
 #include "Enviroment.h"
 #include "ProcEnum.h"
 #include "Query.h"
 #include "helper.h"
+
 
 PDRIVER_OBJECT pdoGlobalDrvObj = 0;
 
@@ -28,9 +30,27 @@ NTSTATUS CRARKSYS_DispatchDeviceControl(
 {
 	NTSTATUS status = STATUS_SUCCESS;
 	PIO_STACK_LOCATION irpSp = IoGetCurrentIrpStackLocation(Irp);
+    PVOID inputBuffer, outputBuffer;
+    ULONG inputLength, outputLength, *information;
+
+    inputBuffer = irpSp->Parameters.DeviceIoControl.Type3InputBuffer;
+    inputLength = irpSp->Parameters.DeviceIoControl.InputBufferLength;
+    outputBuffer = Irp->UserBuffer;
+    outputLength = irpSp->Parameters.DeviceIoControl.OutputBufferLength;
+    information = &Irp->IoStatus.Information;
 
 	switch(irpSp->Parameters.DeviceIoControl.IoControlCode)
 	{
+    case IOCTL_CRARKSYS_HELLO:
+        KdPrint(("Hello World!!\n"));
+        Irp->IoStatus.Status = STATUS_SUCCESS;
+        Irp->IoStatus.Information = 0;
+        break;
+
+    case IOCTL_CRARKSYS_SPEINIT:
+        Irp->IoStatus.Status = DispatchSpecialInitialize(inputBuffer, inputLength, outputBuffer, outputLength, information);
+        break;
+
 	default:
 		Irp->IoStatus.Status = STATUS_INVALID_DEVICE_REQUEST;
 		Irp->IoStatus.Information = 0;
