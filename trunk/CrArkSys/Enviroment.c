@@ -392,7 +392,7 @@ EnviromentSpecialInitialize(HANDLE ThreadHandle, PVOID Thread, BOOLEAN Handle)
     {
         status = ObReferenceObjectByHandle(ThreadHandle,
                                            THREAD_TERMINATE,
-                                           NULL,
+                                           *PsThreadType,
                                            KernelMode,
                                            &thread,
                                            NULL);
@@ -407,7 +407,7 @@ EnviromentSpecialInitialize(HANDLE ThreadHandle, PVOID Thread, BOOLEAN Handle)
                                        OBJ_KERNEL_HANDLE,
                                        NULL,
                                        0,
-                                       NULL,
+                                       *PsThreadType,
                                        KernelMode,
                                        &ThreadHandle);
         if(!NT_SUCCESS(status))
