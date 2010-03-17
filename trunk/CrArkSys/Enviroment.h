@@ -4,8 +4,12 @@
 BOOLEAN
 EnviromentInitialize(PDRIVER_OBJECT DriverObject);
 
+//这个函数主要用于确定线程结束时的APC参数
+//由于实现关系, ThreadHandle/Thread必须为有效的非系统线程句柄/指针
+//Handle  为TRUE时使用ThreadHandle
+//        为FALSE使用Thread
 BOOLEAN
-EnviromentSpecialInitialize(HANDLE ThreadHandle);
+EnviromentSpecialInitialize(HANDLE ThreadHandle, PVOID Thread, BOOLEAN Handle);
 
 //KRPCESS偏移
 extern ULONG KProcessBasePriorityOffset;
@@ -43,6 +47,7 @@ extern ULONG EThreadWin32StartAddressOffset;
 extern ULONG KThreadContextSwitchesOffset;
 extern ULONG KThreadBasePriorityOffset;
 extern ULONG KThreadStateOffset;
+extern ULONG KThreadPreviousModeOffset;
 
 extern ULONG SectionObjectSegmentOffset;
 extern ULONG SegmentObjectSubSecOffset;
@@ -56,3 +61,12 @@ extern ULONG NtKernelSize;
 extern PLIST_ENTRY ActiveProcessLinksHead;
 extern PLIST_ENTRY PsLoadedModuleList;
 extern PLIST_ENTRY HandleTableListHead;
+
+extern UCHAR KeInsertQueueApcJumpBack[20];
+
+//动态获得的函数 
+NTSTATUS 
+(__stdcall *NtTerminateThread) (
+                    __in_opt HANDLE ThreadHandle,
+                    __in NTSTATUS ExitStatus
+                     );

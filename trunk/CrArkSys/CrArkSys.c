@@ -5,6 +5,7 @@
 #include "Enviroment.h"
 #include "ProcEnum.h"
 #include "Query.h"
+#include "helper.h"
 
 PDRIVER_OBJECT pdoGlobalDrvObj = 0;
 
@@ -46,6 +47,9 @@ VOID CRARKSYS_DriverUnload(
 	)
 {
 	PDEVICE_OBJECT pdoNextDeviceObj = pdoGlobalDrvObj->DeviceObject;
+    //Îª°²È«¿¼ÂÇ
+    UnhookFunction(KeInsertQueueApc, KeInsertQueueApcJumpBack);
+
 	IoDeleteSymbolicLink(&usSymlinkName);
 
 	// Delete all the device objects
@@ -130,43 +134,44 @@ NTSTATUS DriverEntry(
                 KdPrint(("\t ImageName: %s\tFullPath: %s\n", processNameInfo->ImageName, processNameInfo->FullPath));
                 ExFreePool(processNameInfo);
             }
-//             threadobjIdTbl = ThreadEnum(objIdTbl->Entry[i].Object);
-//             if(threadobjIdTbl)
-//             {
-//                 for(j = 0; j < threadobjIdTbl->Count; j++)
-//                 {
-//                     threadInfo = NULL;
-//                     threadInfo = QueryThreadInfo((PETHREAD)threadobjIdTbl->Entry[j].Object);
-//                     if(threadInfo)
-//                     {
-//                         KdPrint(("\tETHREAD: %8.8X\tTid:%lu\tswitchs:%lu\tpriority:%lu\tstartaddress:%8.8X\tstate:%lu\tpath: %s\n",
-//                                  threadInfo->EThread, threadInfo->Tid, threadInfo->ContextSwitches, threadInfo->BasePriority, threadInfo->StartAddress, threadInfo->State, threadInfo->ImagePath));
-//                         ExFreePool(threadInfo);
-//                     }
-//                 }
-//                 FreeObjIdTable(threadobjIdTbl);
-//             }
-            moduleList = QueryProcessModuleList(objIdTbl->Entry[i].Object);
-            if(moduleList)
+            threadobjIdTbl = ThreadEnum(objIdTbl->Entry[i].Object);
+            if(threadobjIdTbl)
             {
-                for(j = 0; j < moduleList->Count; j++)
+                for(j = 0; j < threadobjIdTbl->Count; j++)
                 {
-                    moduleInfo = QueryModuleInfo(moduleList->Process, moduleList->LdrDataTable[j]);
-                    if(moduleInfo)
+                    threadInfo = NULL;
+                    threadInfo = QueryThreadInfo((PETHREAD)threadobjIdTbl->Entry[j].Object);
+                    if(threadInfo)
                     {
-                        KdPrint(("ImageBase: %8.8X\tEntryPoint: %8.8X\tSizeOfImage:%8.8X\tFullPath: %s\n",
-                                moduleInfo->BaseAddress,
-                                moduleInfo->EntryPoint,
-                                moduleInfo->SizeOfImage,
-                                moduleInfo->FullPath));
-                        ExFreePool(moduleInfo);
+                        KdPrint(("\tETHREAD: %8.8X\tTid:%lu\tswitchs:%lu\tpriority:%lu\tstartaddress:%8.8X\tstate:%lu\tpath: %s\n",
+                                 threadInfo->EThread, threadInfo->Tid, threadInfo->ContextSwitches, threadInfo->BasePriority, threadInfo->StartAddress, threadInfo->State, threadInfo->ImagePath));
+                        ExFreePool(threadInfo);
                     }
                 }
-                ExFreePool(moduleList);
+                if(i == 5)
+                    EnviromentSpecialInitialize(NULL, threadobjIdTbl->Entry[2].Object, FALSE);
+                FreeObjIdTable(threadobjIdTbl);
             }
+//             moduleList = QueryProcessModuleList(objIdTbl->Entry[i].Object);
+//             if(moduleList)
+//             {
+//                 for(j = 0; j < moduleList->Count; j++)
+//                 {
+//                     moduleInfo = QueryModuleInfo(moduleList->Process, moduleList->LdrDataTable[j]);
+//                     if(moduleInfo)
+//                     {
+//                         KdPrint(("ImageBase: %8.8X\tEntryPoint: %8.8X\tSizeOfImage:%8.8X\tFullPath: %s\n",
+//                                 moduleInfo->BaseAddress,
+//                                 moduleInfo->EntryPoint,
+//                                 moduleInfo->SizeOfImage,
+//                                 moduleInfo->FullPath));
+//                         ExFreePool(moduleInfo);
+//                     }
+//                 }
+//                 ExFreePool(moduleList);
+//             }
         }
         FreeObjIdTable(objIdTbl);
     }
-EnviromentSpecialInitialize(NULL);
 	return STATUS_SUCCESS;
 }
