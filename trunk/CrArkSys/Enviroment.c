@@ -380,6 +380,14 @@ EnviromentSpecialInitialize(HANDLE ThreadHandle, PVOID Thread, BOOLEAN Handle)
     NTSTATUS status;
     KPROCESSOR_MODE previousMode;
 
+    //已经初始化了
+    if(PsExitSpecialApc ||
+       PspExitApcRundown ||
+       PspExitNormalApc)
+    {
+        return TRUE;
+    }
+
     if(Handle)
     {
         status = ObReferenceObjectByHandle(ThreadHandle,
