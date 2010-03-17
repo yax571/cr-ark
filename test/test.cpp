@@ -4,7 +4,11 @@
 
 int main()
 {
-    CrInitialize();
+    if(CrInitialize())
+        printf("initialize ok..\n");
+    else
+        printf("fail.\n");
 
+    getchar();
     return 0;
 }
