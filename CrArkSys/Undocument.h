@@ -73,6 +73,7 @@ typedef struct _SYSTEM_MODULE_INFORMATION { // Information Class 11
 
 NTKERNELAPI
 BOOLEAN
+NTAPI
 KeInsertQueueApc (
                   __inout PRKAPC Apc,
                   __in_opt PVOID SystemArgument1,
@@ -80,10 +81,12 @@ KeInsertQueueApc (
                   __in KPRIORITY Increment
                   );
 
-NTSYSAPI
-NTSTATUS
-NTAPI
-ZwTerminateThread (
-                   __in_opt HANDLE ThreadHandle,
-                   __in NTSTATUS ExitStatus
-                   );
+
+typedef struct _ServiceDescriptorTable {
+    PULONG ServiceTable;
+    ULONG Unknown;
+    ULONG ServiceCount;
+    PULONG ParamTable;
+}ServiceDescriptorTable, *PServiceDescriptorTable;
+
+NTKERNELAPI ServiceDescriptorTable KeServiceDescriptorTable;

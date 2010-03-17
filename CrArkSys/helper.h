@@ -35,3 +35,7 @@ UnhookFunction(PVOID Function, PUCHAR JmpBuffer);
 //打开或关闭内存写保护
 VOID
 EnableWritePretect(BOOLEAN Enable);
+
+//改变当前线程的PreviousMode
+KPROCESSOR_MODE
+SetCurrentThreadProcessorMode(KPROCESSOR_MODE mode);

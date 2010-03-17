@@ -2,6 +2,7 @@
 #include <string.h>
 #include "Undocument.h"
 #include "ade32.h"
+#include "Enviroment.h"
 
 
 BOOLEAN 
@@ -229,6 +230,9 @@ UnhookFunction(PVOID Function, PUCHAR JmpBuffer)
 {
     ULONG length;
 
+    if(JmpBuffer[0] == 0)
+        return TRUE;
+
     length = ade32_get_code_length(JmpBuffer, 5);
     if(length == 0)
         return FALSE;
@@ -237,5 +241,20 @@ UnhookFunction(PVOID Function, PUCHAR JmpBuffer)
     RtlCopyMemory(Function, JmpBuffer, length);
     EnableWritePretect(TRUE);
 
+    RtlZeroMemory(JmpBuffer, length);
+
     return TRUE;
+}
+
+KPROCESSOR_MODE
+SetCurrentThreadProcessorMode(KPROCESSOR_MODE mode)
+{
+    KPROCESSOR_MODE* locate;
+    KPROCESSOR_MODE previousMode;
+
+    locate = (KPROCESSOR_MODE*)((ULONG)KeGetCurrentThread() + KThreadPreviousModeOffset);
+    previousMode = *locate;
+    *locate = mode;
+
+    return previousMode;
 }

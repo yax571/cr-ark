@@ -1,4 +1,4 @@
-#include <ntddk.h>
+#include <ntifs.h>
 #include "Enviroment.h"
 #include "ade32.h"
 #include "Undocument.h"
@@ -39,6 +39,7 @@ ULONG EThreadWin32StartAddressOffset;
 ULONG KThreadContextSwitchesOffset;
 ULONG KThreadBasePriorityOffset;
 ULONG KThreadStateOffset;
+ULONG KThreadPreviousModeOffset;
 
 //SectionObject偏移
 ULONG SectionObjectSegmentOffset;
@@ -61,6 +62,13 @@ PVOID PspExitNormalApc;
 
 PETHREAD EThreadForGetApc;
 UCHAR KeInsertQueueApcJumpBack[20];
+
+//动态获得的函数
+NTSTATUS
+(__stdcall *NtTerminateThread) (
+                      __in_opt HANDLE ThreadHandle,
+                      __in NTSTATUS ExitStatus
+                      );
 
 //搜索PsLookProcessThreadByCide函数, 取得未导出的PspCidTable地址
 BOOLEAN
@@ -226,6 +234,25 @@ GetHandleTableListHead()
     return found;
 }
 
+BOOLEAN
+GetServicesFunction()
+{
+    ULONG buildNo;
+    ULONG ZwTerminateThreadNo;
+
+    PsGetVersion(NULL, NULL, &buildNo, NULL);
+
+    switch(buildNo)
+    {
+    case 2600:          //winxp
+        ZwTerminateThreadNo = 0x102;
+        break;
+    }
+
+    *(PULONG)(&NtTerminateThread) = KeServiceDescriptorTable.ServiceTable[ZwTerminateThreadNo];
+    return TRUE;
+}
+
 //初始化一些偏移量
 BOOLEAN
 EnviromentInitialize(PDRIVER_OBJECT DriverObject)
@@ -258,6 +285,7 @@ EnviromentInitialize(PDRIVER_OBJECT DriverObject)
         KThreadBasePriorityOffset = 0x6c;
         KThreadContextSwitchesOffset = 0x04c;
         KThreadStateOffset = 0x02d;
+        KThreadPreviousModeOffset = 0x140;
 
         KProcessBasePriorityOffset = 0x062;
         KProcessStateOffset = 0x065;
@@ -278,6 +306,9 @@ EnviromentInitialize(PDRIVER_OBJECT DriverObject)
     
     //获得System进程
     SystemProcess = PsGetCurrentProcess();
+    //获得未导出的函数
+    if(GetServicesFunction() == FALSE)
+        return FALSE;
     //获得PsLoadedModuleList地址和内核基址、大小
     if(GetPsLoadedModuleListHead(DriverObject) == FALSE)
         return FALSE;
@@ -319,6 +350,9 @@ FakeKeInsertQueueApc (
         //获得成功后取消钩子
         EThreadForGetApc = NULL;
         UnhookFunction(KeInsertQueueApc, KeInsertQueueApcJumpBack);
+        KdPrint(("get PsExitSpecialApc: %8.8X, PspExitApcRundown: %8.8X, PspExitNormalApc: %8.8X\n",
+                 PsExitSpecialApc, PspExitApcRundown, PspExitNormalApc));
+        return FALSE;
     }
     
     __asm {
@@ -334,23 +368,43 @@ FakeKeInsertQueueApc (
     return retVal > 0;
 }
 
-
+//这个函数主要用于确定线程结束时的APC参数
+//由于实现关系, ThreadHandle/Thread必须为有效的非系统线程句柄/指针
+//Handle  为TRUE时使用ThreadHandle
+//        为FALSE使用Thread
 BOOLEAN
-EnviromentSpecialInitialize(HANDLE ThreadHandle)
+EnviromentSpecialInitialize(HANDLE ThreadHandle, PVOID Thread, BOOLEAN Handle)
 {
     BOOLEAN retVal;
     PETHREAD thread;
     NTSTATUS status;
+    KPROCESSOR_MODE previousMode;
 
-    status = ObReferenceObjectByHandle(ThreadHandle,
-                                       THREAD_TERMINATE,
+    if(Handle)
+    {
+        status = ObReferenceObjectByHandle(ThreadHandle,
+                                           THREAD_TERMINATE,
+                                           NULL,
+                                           KernelMode,
+                                           &thread,
+                                           NULL);
+        if(!NT_SUCCESS(status))
+            return FALSE;
+        ObDereferenceObject(thread);
+    }
+    else
+    {
+        thread = Thread;
+        status = ObOpenObjectByPointer(Thread,
+                                       OBJ_KERNEL_HANDLE,
+                                       NULL,
+                                       0,
                                        NULL,
                                        KernelMode,
-                                       &thread,
-                                       NULL);
-    if(!NT_SUCCESS(status))
-        return FALSE;
-    ObDereferenceObject(thread);
+                                       &ThreadHandle);
+        if(!NT_SUCCESS(status))
+            return FALSE;
+    }
 
     EThreadForGetApc = thread;
 
@@ -362,7 +416,14 @@ EnviromentSpecialInitialize(HANDLE ThreadHandle)
         EThreadForGetApc = NULL;
         return retVal;
     }
+    
+    previousMode = SetCurrentThreadProcessorMode(KernelMode);
+    NtTerminateThread(ThreadHandle, 0x12345678);
+    SetCurrentThreadProcessorMode(previousMode);
 
-    ZwTerminateThread(ThreadHandle, 0x12345678);
-    return FALSE;
+
+    if(!Handle)
+        ZwClose(ThreadHandle);
+
+    return TRUE;
 }
