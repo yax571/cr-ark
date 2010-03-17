@@ -37,7 +37,7 @@ BOOL ReleaseDriver(TCHAR* Path)
 }
 
 //在注册表System\CurrentControlSet\Services键下注册一个服务
-//用来给ZwLoadDriver安装驱动
+//用来给ZwLoadDriver和ZwUnloadDriver使用
 BOOL MakeRegistryEntry(TCHAR *Path)
 {
     BOOL retVal = FALSE;
@@ -81,6 +81,7 @@ _MakeRegistryEntryExit:
     return retVal;
 }
 
+//加载驱动
 BOOL LoadDriver()
 {
     BOOL retVal = FALSE;
@@ -115,15 +116,46 @@ BOOL LoadDriver()
     DeleteFile(&path[4]);
 
     retVal = NT_SUCCESS(status);
+    if(retVal)
+    {
+        lstrcpy(DriverPath, path);
+    }
 
     return retVal;
 }
 
+//卸载驱动
+void UnloadDriver()
+{
+    BOOL retVal;
+    WCHAR registryEntry[MAX_PATH];
+    UNICODE_STRING uniRegistryEntry;
+
+    retVal = MakeRegistryEntry(DriverPath);
+    if(!retVal)
+        return;
+
+    wsprintfW(registryEntry, L"%s\\%s", 
+              L"\\Registry\\Machine\\System\\CurrentControlSet\\Services\\",
+              SERVICENAME_UNICODE);
+    RtlInitUnicodeString(&uniRegistryEntry,
+                         registryEntry);
+    ZwUnloadDriver(&uniRegistryEntry);
+
+    SHDeleteKey(HKEY_LOCAL_MACHINE, SERVICEPATH);
+}
+
+//初始化dll文件
+//包括释放、加载、初始化、链接驱动程序
 BOOL CrInitialize()
 {
     HANDLE handle;
 
     //如果驱动已经加载
+    if(DriverHandle != NULL &&
+        DriverHandle != INVALID_HANDLE_VALUE)
+        return TRUE;
+
     handle = CreateFile(DEVICENAME, 
                         GENERIC_READ | GENERIC_WRITE,
                         FILE_SHARE_READ | FILE_SHARE_WRITE,
@@ -153,4 +185,16 @@ BOOL CrInitialize()
 
     DriverHandle = handle;
     return TRUE;
+}
+
+//关闭连接、卸载驱动、释放资源等
+void CrUninitialize()
+{
+    if(DriverHandle != NULL &&
+        DriverHandle != INVALID_HANDLE_VALUE)
+    {
+        CloseHandle(DriverHandle);
+        UnloadDriver();
+        DriverHandle = INVALID_HANDLE_VALUE;
+    }
 }

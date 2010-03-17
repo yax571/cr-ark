@@ -7,3 +7,4 @@
 // TODO: reference any additional headers you need in STDAFX.H
 // and not in this file
 HANDLE DriverHandle;
+TCHAR DriverPath[MAX_PATH];

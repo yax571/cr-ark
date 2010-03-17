@@ -17,6 +17,7 @@
 	<Configurations>
 		<Configuration
 			Name="WLH free|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory=".\"
 			ConfigurationType="0"
 			InheritedPropertySheets=".\CrArkSys.vsprops"
@@ -64,6 +65,10 @@
 			Name="script"
 			Filter="*"
 			>
+			<File
+				RelativePath=".\CrArkSys.rc"
+				>
+			</File>
 			<File
 				RelativePath=".\CrArkSys.vsprops"
 				>
@@ -149,6 +154,10 @@
 				</File>
 				<File
 					RelativePath=".\helper.h"
+					>
+				</File>
+				<File
+					RelativePath=".\resource.h"
 					>
 				</File>
 				<File

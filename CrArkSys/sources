@@ -17,4 +17,5 @@ SOURCES=CrArkSys.c \
 		ade32.c \
 		ProcEnum.c \
 		Query.c \
-		helper.c
+		helper.c \
+		CrArkSys.rc

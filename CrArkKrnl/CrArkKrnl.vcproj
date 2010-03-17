@@ -233,10 +233,6 @@
 				RelativePath=".\CrArkKrnl.h"
 				>
 			</File>
-			<File
-				RelativePath=".\resource.h"
-				>
-			</File>
 			<Filter
 				Name="misc"
 				>
@@ -245,11 +241,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\stdafx.h"
+					RelativePath=".\resource.h"
 					>
 				</File>
 				<File
-					RelativePath=".\targetver.h"
+					RelativePath=".\stdafx.h"
 					>
 				</File>
 			</Filter>
@@ -264,10 +260,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath=".\ReadMe.txt"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>
