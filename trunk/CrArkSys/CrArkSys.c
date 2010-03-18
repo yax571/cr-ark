@@ -51,6 +51,14 @@ NTSTATUS CRARKSYS_DispatchDeviceControl(
         Irp->IoStatus.Status = DispatchSpecialInitialize(inputBuffer, inputLength, outputBuffer, outputLength, information);
         break;
 
+    case IOCTL_CRARKSYS_PROCENUM:
+        Irp->IoStatus.Status = DispatchProcessEnum(inputBuffer, inputLength, outputBuffer, outputLength, information);
+        break;
+
+    case IOCTL_CRARKSYS_THREADENUM:
+        Irp->IoStatus.Status = DispatchThreadEnum(inputBuffer, inputLength, outputBuffer, outputLength, information);
+        break;
+
 	default:
 		Irp->IoStatus.Status = STATUS_INVALID_DEVICE_REQUEST;
 		Irp->IoStatus.Information = 0;
@@ -79,6 +87,8 @@ VOID CRARKSYS_DriverUnload(
 		pdoNextDeviceObj = pdoThisDeviceObj->NextDevice;
 		IoDeleteDevice(pdoThisDeviceObj);
 	}
+
+    KdPrint(("CrArkSys Unload.\n"));
 }
 
 NTSTATUS DriverEntry(
@@ -88,14 +98,6 @@ NTSTATUS DriverEntry(
 {
 	PDEVICE_OBJECT pdoDeviceObj = 0;
 	NTSTATUS status = STATUS_UNSUCCESSFUL;
-    ULONG i, j;
-    PObjectIdTable objIdTbl, threadobjIdTbl;
-    PEPROCESS process;
-    PProcessNameInfo processNameInfo;
-    PProcessModuleList kernelModList, r3modList;
-    PThreadInfo threadInfo;
-    PProcessModuleList moduleList;
-    PModuleInfo moduleInfo;
 
 	pdoGlobalDrvObj = DriverObject;
 
@@ -137,61 +139,6 @@ NTSTATUS DriverEntry(
 	DriverObject->MajorFunction[IRP_MJ_DEVICE_CONTROL] = CRARKSYS_DispatchDeviceControl;
 	DriverObject->DriverUnload = CRARKSYS_DriverUnload;
 
-    objIdTbl = ProcessEnum(TRUE);
-    if(objIdTbl == NULL)
-    {
-        KdPrint(("enum fail.\n"));
-    }
-    else
-    {
-        KdPrint(("process total number: %lu\n", objIdTbl->Count));
-        for(i = 0; i < objIdTbl->Count; i++)
-        {
-            KdPrint(("EPROCESS: %8.8X\tPID: %lu\n", objIdTbl->Entry[i].Object, objIdTbl->Entry[i].UniqueId));
-            processNameInfo = QueryProcessName(objIdTbl->Entry[i].Object);
-            if(processNameInfo != NULL)
-            {
-                KdPrint(("\t ImageName: %s\tFullPath: %s\n", processNameInfo->ImageName, processNameInfo->FullPath));
-                ExFreePool(processNameInfo);
-            }
-            threadobjIdTbl = ThreadEnum(objIdTbl->Entry[i].Object);
-            if(threadobjIdTbl)
-            {
-                for(j = 0; j < threadobjIdTbl->Count; j++)
-                {
-                    threadInfo = NULL;
-                    threadInfo = QueryThreadInfo((PETHREAD)threadobjIdTbl->Entry[j].Object);
-                    if(threadInfo)
-                    {
-                        KdPrint(("\tETHREAD: %8.8X\tTid:%lu\tswitchs:%lu\tpriority:%lu\tstartaddress:%8.8X\tstate:%lu\tpath: %s\n",
-                                 threadInfo->EThread, threadInfo->Tid, threadInfo->ContextSwitches, threadInfo->BasePriority, threadInfo->StartAddress, threadInfo->State, threadInfo->ImagePath));
-                        ExFreePool(threadInfo);
-                    }
-                }
-                if(i == 5)
-                    EnviromentSpecialInitialize(NULL, threadobjIdTbl->Entry[2].Object, FALSE);
-                FreeObjIdTable(threadobjIdTbl);
-            }
-//             moduleList = QueryProcessModuleList(objIdTbl->Entry[i].Object);
-//             if(moduleList)
-//             {
-//                 for(j = 0; j < moduleList->Count; j++)
-//                 {
-//                     moduleInfo = QueryModuleInfo(moduleList->Process, moduleList->LdrDataTable[j]);
-//                     if(moduleInfo)
-//                     {
-//                         KdPrint(("ImageBase: %8.8X\tEntryPoint: %8.8X\tSizeOfImage:%8.8X\tFullPath: %s\n",
-//                                 moduleInfo->BaseAddress,
-//                                 moduleInfo->EntryPoint,
-//                                 moduleInfo->SizeOfImage,
-//                                 moduleInfo->FullPath));
-//                         ExFreePool(moduleInfo);
-//                     }
-//                 }
-//                 ExFreePool(moduleList);
-//             }
-        }
-        FreeObjIdTable(objIdTbl);
-    }
+    KdPrint(("CrArkSys DriverLoad.\n"));
 	return STATUS_SUCCESS;
 }

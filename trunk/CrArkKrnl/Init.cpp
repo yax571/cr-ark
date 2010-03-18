@@ -2,6 +2,8 @@
 #include "CrArkKrnl.h"
 #include "ntapi.h"
 #include "shlwapi.h"
+#include "winioctl.h"
+#include "..\CrArkSys\CtrlCode.h"
 
 #define SERVICENAME (_T("CrArk"))
 #define SERVICEPATH (_T("System\\CurrentControlSet\\Services\\CrArk"))
@@ -145,6 +147,34 @@ void UnloadDriver()
     SHDeleteKey(HKEY_LOCAL_MACHINE, SERVICEPATH);
 }
 
+DWORD WINAPI InitThreadProc(LPVOID lpParameter)
+{
+    while(1) {
+        Sleep(0x1000);
+    }
+    return 0;
+}
+
+BOOL InitApc()
+{
+    BOOL retVal;
+    HANDLE threadHandle;
+    DWORD threadId, dwRet;
+
+    threadHandle = CreateThread(NULL, 0, InitThreadProc, NULL, 0, &threadId);
+    if(threadHandle == NULL)
+        return FALSE;
+
+    retVal = DeviceIoControl(DriverHandle, IOCTL_CRARKSYS_SPEINIT,
+                             &threadHandle, sizeof(threadHandle),
+                             NULL, 0, &dwRet, NULL);
+
+    TerminateThread(threadHandle, 0);
+    CloseHandle(threadHandle);
+
+    return retVal;
+}
+
 //初始化dll文件
 //包括释放、加载、初始化、链接驱动程序
 BOOL CrInitialize()
@@ -184,6 +214,10 @@ BOOL CrInitialize()
         return FALSE;
 
     DriverHandle = handle;
+
+    //最后初始化APC
+    InitApc();
+
     return TRUE;
 }
 
