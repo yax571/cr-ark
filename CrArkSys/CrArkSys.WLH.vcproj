@@ -130,6 +130,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CtrlCode.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Dispatch.h"
 				>
 			</File>
