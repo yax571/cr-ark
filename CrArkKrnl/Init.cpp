@@ -177,7 +177,7 @@ BOOL InitApc()
 
 //初始化dll文件
 //包括释放、加载、初始化、链接驱动程序
-BOOL CrInitialize()
+BOOL WINAPI CrInitialize()
 {
     HANDLE handle;
 
@@ -222,7 +222,7 @@ BOOL CrInitialize()
 }
 
 //关闭连接、卸载驱动、释放资源等
-void CrUninitialize()
+void WINAPI CrUninitialize()
 {
     if(DriverHandle != NULL &&
         DriverHandle != INVALID_HANDLE_VALUE)

@@ -22,3 +22,19 @@ NTSTATUS
 DispatchThreadEnum(PVOID InputBuffer, ULONG InputLength,
                    PVOID OutputBuffer, ULONG OutputLength,
                    PULONG Information);
+
+//\获取进程名称
+//InputBuffer[0] == PEPROCESS指针
+//OutputBuffer ProcessNameInfo缓冲
+NTSTATUS
+DispatchQueryProcessName(PVOID InputBuffer, ULONG InputLength,
+                         PVOID OutputBuffer, ULONG OutputLength,
+                         PULONG Information);
+
+//获取进程信息
+//InputBuffer[0] == PEPROCESS指针
+//OutputBuffer ProcessInfo缓冲
+NTSTATUS
+DispatchQueryProcessInfo(PVOID InputBuffer, ULONG InputLength,
+                         PVOID OutputBuffer, ULONG OutputLength,
+                         PULONG Information);

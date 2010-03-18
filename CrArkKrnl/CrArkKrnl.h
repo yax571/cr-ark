@@ -7,6 +7,13 @@
 #endif
 
 #define OBJECT_ID_TABLE_LENGTH 65535
+#define FULL_PATH_LENGTH 266
+#define MAX_LDR_DATA_TABLE_LENGTH 65535
+
+typedef struct _ProcessNameInfo {
+    char ImageName[17];
+    char FullPath[FULL_PATH_LENGTH];
+}ProcessNameInfo, *PProcessNameInfo;
 
 typedef struct _ObjectIdPair{
     PVOID Object;
@@ -18,15 +25,35 @@ typedef struct _ObjectIdTable{
     ObjectIdPair Entry[OBJECT_ID_TABLE_LENGTH];
 }ObjectIdTable, *PObjectIdTable;
 
+typedef struct _ProcessInfo {
+    char BasePriority;
+    unsigned char State;
+    LARGE_INTEGER CreateTime;
+    DWORD UniqueProcessId;
+    DWORD DebugPort;
+    DWORD HandleCount;
+    DWORD InheritedFromUniqueProcessId;
+    PVOID Peb;
+}ProcessInfo, *PProcessInfo;
+
 //初始化dll文件
 //包括释放、加载、初始化、链接驱动程序
-CRARKAPI BOOL CrInitialize();
+CRARKAPI BOOL WINAPI CrInitialize();
 
 //关闭连接、卸载驱动、释放资源等
-CRARKAPI void CrUninitialize();
+CRARKAPI void WINAPI CrUninitialize();
 
 //枚举进程
-CRARKAPI PObjectIdTable CrProcessEnum(BOOL ShowDeleting);
+CRARKAPI PObjectIdTable WINAPI CrProcessEnum(BOOL ShowDeleting);
 
 //枚举线程
-CRARKAPI PObjectIdTable CrThreadEnum(PVOID Process);
+//Process为CrProcessEnum枚举出的进程
+CRARKAPI PObjectIdTable WINAPI CrThreadEnum(PVOID Process);
+
+//获得进程名称
+//Process为CrProcessEnum枚举出的进程
+CRARKAPI PProcessNameInfo WINAPI CrQueryProcessName(PVOID Process);
+
+//获取进程详细信息
+//Process为CrProcessEnum枚举出的进程
+CRARKAPI PProcessInfo WINAPI CrQueryProcessInfo(PVOID Process);
