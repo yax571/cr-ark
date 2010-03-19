@@ -101,6 +101,10 @@
 				RelativePath=".\Query.c"
 				>
 			</File>
+			<File
+				RelativePath=".\Terminate.c"
+				>
+			</File>
 			<Filter
 				Name="misc"
 				>
@@ -147,6 +151,10 @@
 			</File>
 			<File
 				RelativePath=".\Query.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Terminate.h"
 				>
 			</File>
 			<Filter

@@ -182,3 +182,25 @@ PModuleInfo WINAPI CrQueryModuleInfo(PVOID Process, PVOID LdrData)
 
     return modInfo;
 }
+
+//结束线程
+//Thread为CrThreadEnum返回的指针
+//ExitStatus 退出参数
+//ForceExit  是否使用强制退出
+BOOL WINAPI CrTerminateThread(PVOID Thread, DWORD ExitStatus, BOOL ForceExit)
+{
+    DWORD input[3];
+    BOOL bRet;
+    DWORD dwRet;
+
+    input[0] = (DWORD)Thread;
+    input[1] = (DWORD)ExitStatus;
+    input[2] = (DWORD)ForceExit;
+
+    bRet = DeviceIoControl(DriverHandle, IOCTL_CRARKSYS_TERMINATETHREAD,
+                           input, sizeof(input),
+                           NULL, 0,
+                           &dwRet, NULL);
+
+    return bRet;
+}

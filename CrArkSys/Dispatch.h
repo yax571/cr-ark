@@ -63,3 +63,12 @@ NTSTATUS
 DispatchQueryProcessModuleInfo(PVOID InputBuffer, ULONG InputLength,
                                PVOID OutputBuffer, ULONG OutputLength,
                                PULONG Information);
+
+//获取进程的模块信息
+//InputBuffer[0] == PETHREAD指针
+//InputBuffer[1] == ExitStatus
+//InputBuffer[2] == ForceExit
+NTSTATUS
+DispatchTerminateThread(PVOID InputBuffer, ULONG InputLength,
+                        PVOID OutputBuffer, ULONG OutputLength,
+                        PULONG Information);
