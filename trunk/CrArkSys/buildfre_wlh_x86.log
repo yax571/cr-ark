@@ -5,95 +5,11 @@ skipping post pass 0 command
 Compiling and Linking e:\crark\crarksys *************
 'nmake.exe /nologo BUILDMSG=Stop. -i BUILD_PASS=PASS2 LINKONLY=1 NOPASS0=1 MAKEDIR_RELATIVE_TO_BASEDIR= MAKEDIR_LOWERCASE=e:\crark\crarksys'
 e:\crark\crarksys: TARGETPATH is obj
-	cl.exe @e:\crark\crarksys\objfre_wlh_x86\i386\cl.rsp
-Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 14.00.50727.220 for 80x86
+    rc -l 409 -DSXS_PROCESSOR_ARCHITECTURE="""x86"""  -DSXS_TARGET="""CrArkSys.sys"""   -DSYSTEM_COMPATIBLE_ASSEMBLY_NAME="""Microsoft.Windows.SystemCompatible"""  -DLSYSTEM_COMPATIBLE_ASSEMBLY_NAME=L"""Microsoft.Windows.SystemCompatible"""   -DSXS_ASSEMBLY_VERSION=""""""  /r /fo objfre_wlh_x86\i386\crarksys.res /D_X86_=1 /Di386=1  /DSTD_CALL /DCONDITION_HANDLING=1   /DNT_INST=0 /DWIN32=100 /D_NT1X_=100 /DWINNT=1 /D_WIN32_WINNT=0x0600 /DWINVER=0x0600 /D_WIN32_IE=0x0700    /DWIN32_LEAN_AND_MEAN=1 /DDEVL=1 /D__BUILDMACHINE__=WinDDK /DFPO=0  /DNDEBUG /D_DLL=1 /DNDEBUG  /DNTDDI_VERSION=0x06000000   /Ie:\crark\crarksys\objfre_wlh_x86\i386 /IC:\WinDDK\6000\inc\api /IC:\WinDDK\6000\inc\api /IC:\WinDDK\6000\inc\ddk /IC:\WinDDK\6000\inc\ddk /IC:\WinDDK\6000\inc\crt .\crarksys.rc
+Microsoft (R) Windows (R) Resource Compiler Version 6.0.5724.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
-cl /Fo"e:\crark\crarksys\objfre_wlh_x86\i386/"
-   /FC
-   
-   
-   /Ii386
-   /I.
-   /Ie:\crark\crarksys\objfre_wlh_x86\i386
-   /IC:\WinDDK\6000\inc\api
-   /IC:\WinDDK\6000\inc\api
-   /IC:\WinDDK\6000\inc\ddk
-   /IC:\WinDDK\6000\inc\ddk
-   /IC:\WinDDK\6000\inc\crt
-   /D_X86_=1
-   /Di386=1
-   
-   /DSTD_CALL
-   /DCONDITION_HANDLING=1
-   
-   
-   /DNT_INST=0
-   /DWIN32=100
-   /D_NT1X_=100
-   /DWINNT=1
-   /D_WIN32_WINNT=0x0600
-   /DWINVER=0x0600
-   /D_WIN32_IE=0x0700
-   
-   
-   
-   /DWIN32_LEAN_AND_MEAN=1
-   /DDEVL=1
-   /D__BUILDMACHINE__=WinDDK
-   /DFPO=0
-   
-   /DNDEBUG
-   /D_DLL=1
-   /DNDEBUG
-   
-   /DNTDDI_VERSION=0x06000000
-   
-   
-   
-   
-   /c
-   /Zc:wchar_t-
-   /Zl
-   /Zp8
-   /Gy
-   /Gm-
-   -cbstring
-   /W3
-   /WX
-   /Gz
-   
-   
-   /hotpatch
-   /EHs-c-
-   
-   /GR-
-   /GF
-   /GS
-   /Zi
-   /Oxs
-   
-   /Oy-
-   /Zi
-   /Fde:\crark\crarksys\objfre_wlh_x86\i386\
-   
-   
-   -DKMDF_MAJOR_VERSION=01
-   -DKMDF_MINOR_VERSION=005
-   /FIC:\WinDDK\6000\inc\api\warning.h
-   
-   
-   .\crarksys.c .\hashtable.c .\enviroment.c .\ade32.c .\procenum.c .\query.c .\helper.c 
-
-crarksys.c
-hashtable.c
-enviroment.c
-ade32.c
-procenum.c
-query.c
-helper.c
-Generating Code...
-	link.exe /out:objfre_wlh_x86\i386\CrArkSys.sys /machine:ix86 @C:\DOCUME~1\Owner\LOCALS~1\Temp\nm253.tmp
+	link.exe /out:objfre_wlh_x86\i386\CrArkSys.sys /machine:ix86 @C:\DOCUME~1\Owner\LOCALS~1\Temp\nm144.tmp
 Microsoft (R) Incremental Linker Version 8.00.50727.220
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
@@ -123,6 +39,7 @@ Copyright (C) Microsoft Corporation.  All rights reserved.
 /subsystem:native,6.00 
 /entry:GsDriverEntry@8 
 /out:objfre_wlh_x86\i386\CrArkSys.sys 
+objfre_wlh_x86\i386\crarksys.res 
 objfre_wlh_x86\i386\crarksys.obj 
 objfre_wlh_x86\i386\hashtable.obj 
 objfre_wlh_x86\i386\enviroment.obj 
@@ -130,6 +47,7 @@ objfre_wlh_x86\i386\ade32.obj
 objfre_wlh_x86\i386\procenum.obj 
 objfre_wlh_x86\i386\query.obj 
 objfre_wlh_x86\i386\helper.obj 
+objfre_wlh_x86\i386\dispatch.obj 
 C:\WinDDK\6000\lib\wlh\i386\BufferOverflowK.lib 
 C:\WinDDK\6000\lib\wlh\i386\ntoskrnl.lib 
 C:\WinDDK\6000\lib\wlh\i386\hal.lib 

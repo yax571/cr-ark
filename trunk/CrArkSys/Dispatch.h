@@ -38,3 +38,28 @@ NTSTATUS
 DispatchQueryProcessInfo(PVOID InputBuffer, ULONG InputLength,
                          PVOID OutputBuffer, ULONG OutputLength,
                          PULONG Information);
+
+//获取线程信息
+//InputBuffer[0] == PETHREAD指针
+//OutputBuffer threadInfo缓冲
+NTSTATUS
+DispatchQueryThreadInfo(PVOID InputBuffer, ULONG InputLength,
+                        PVOID OutputBuffer, ULONG OutputLength,
+                        PULONG Information);
+
+//获取进程的模块列表
+//InputBuffer[0] == PEPROCESS指针
+//OutputBuffer ProcessModuleList缓冲
+NTSTATUS
+DispatchQueryProcessModuleList(PVOID InputBuffer, ULONG InputLength,
+                               PVOID OutputBuffer, ULONG OutputLength,
+                               PULONG Information);
+
+//获取进程的模块信息
+//InputBuffer[0] == PEPROCESS指针
+//InputBuffer[1] == LdrData指针
+//OutputBuffer ModuleInfo缓冲
+NTSTATUS
+DispatchQueryProcessModuleInfo(PVOID InputBuffer, ULONG InputLength,
+                               PVOID OutputBuffer, ULONG OutputLength,
+                               PULONG Information);

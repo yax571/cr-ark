@@ -8,3 +8,4 @@
 // and not in this file
 HANDLE DriverHandle;
 TCHAR DriverPath[MAX_PATH];
+HANDLE DLLMutex;

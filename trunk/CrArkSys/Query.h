@@ -13,7 +13,7 @@ typedef struct _ProcessNameInfo {
 typedef struct _ProcessModuleList {
     PVOID Process;
     USHORT Count;
-    PVOID LdrDataTable[65535];
+    PVOID LdrDataTable[MAX_LDR_DATA_TABLE_LENGTH];
 }ProcessModuleList, *PProcessModuleList;
 
 typedef struct _ModuleInfo {

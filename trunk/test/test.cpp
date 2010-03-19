@@ -16,6 +16,9 @@ int main()
     PObjectIdTable objThreadTable;
     PProcessNameInfo processNameInfo;
     PProcessInfo processInfo;
+    PThreadInfo threadInfo;
+    PProcessModuleList modList;
+    PModuleInfo modInfo;
 
     objIdTable = CrProcessEnum(TRUE);
     if(objIdTable)
@@ -29,20 +32,20 @@ int main()
                 printf("\tName: %s\tFullPath: %s\n", processNameInfo->ImageName, processNameInfo->FullPath);
                 delete processNameInfo;
             }
-            processInfo = CrQueryProcessInfo(objIdTable->Entry[i].Object);
-            if(processInfo)
+            modList = CrQueryProcessModuleList(objIdTable->Entry[i].Object);
+            if(modList)
             {
-                printf("base: %d\thandle count: %d\n", processInfo->BasePriority, processInfo->HandleCount);
-                delete processInfo;
-            }
-            objThreadTable = CrThreadEnum(objIdTable->Entry[i].Object);
-            if(objThreadTable)
-            {
-                for(unsigned int j = 0; j < objThreadTable->Count; j++)
+                for(int j = 0; j < modList->Count; j++)
                 {
-                    printf("\tETHREAD: %8.8X\tTID:%lu\n", objThreadTable->Entry[j].Object, objThreadTable->Entry[j].UniqueId);
+                    modInfo = CrQueryModuleInfo(modList->Process, modList->LdrDataTable[j]);
+                    if(modInfo)
+                    {
+                        printf("\t Module: Base Address: %8.8X, EntryPoint: %8.8X, SizeOfImage: %lu, FullPath: %s\n", 
+                            modInfo->BaseAddress, modInfo->EntryPoint, modInfo->SizeOfImage, modInfo->FullPath);
+                        delete modInfo;
+                    }
                 }
-                delete objThreadTable;
+                delete modList;
             }
         }
         delete objIdTable;

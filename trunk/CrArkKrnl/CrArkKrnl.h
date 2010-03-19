@@ -36,6 +36,29 @@ typedef struct _ProcessInfo {
     PVOID Peb;
 }ProcessInfo, *PProcessInfo;
 
+typedef struct _ThreadInfo {
+    DWORD Tid;
+    PVOID EThread;
+    DWORD ContextSwitches;
+    char BasePriority;
+    PVOID StartAddress;
+    BYTE State;
+    char ImagePath[FULL_PATH_LENGTH];
+}ThreadInfo, *PThreadInfo;
+
+typedef struct _ProcessModuleList {
+    PVOID Process;
+    WORD Count;
+    PVOID LdrDataTable[MAX_LDR_DATA_TABLE_LENGTH];
+}ProcessModuleList, *PProcessModuleList;
+
+typedef struct _ModuleInfo {
+    DWORD BaseAddress;
+    DWORD EntryPoint;
+    DWORD SizeOfImage;
+    char FullPath[FULL_PATH_LENGTH];
+}ModuleInfo, *PModuleInfo;
+
 //初始化dll文件
 //包括释放、加载、初始化、链接驱动程序
 CRARKAPI BOOL WINAPI CrInitialize();
@@ -57,3 +80,16 @@ CRARKAPI PProcessNameInfo WINAPI CrQueryProcessName(PVOID Process);
 //获取进程详细信息
 //Process为CrProcessEnum枚举出的进程
 CRARKAPI PProcessInfo WINAPI CrQueryProcessInfo(PVOID Process);
+
+//获取线程信息
+//Thread为CrThreadEnum返回的线程指针
+CRARKAPI PThreadInfo WINAPI CrQueryThreadInfo(PVOID Thread);
+
+//获取进程所加载的模块
+//返回值不能直接使用
+CRARKAPI PProcessModuleList WINAPI CrQueryProcessModuleList(PVOID Process);
+
+//获取模块详细信息
+//Process 为CrQueryProcessModuleList返回值中的Process
+//LdrData 为CrQueryProcessModuleList返回值中的LdrDataTable
+CRARKAPI PModuleInfo WINAPI CrQueryModuleInfo(PVOID Process, PVOID LdrData);

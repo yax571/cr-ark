@@ -10,6 +10,8 @@
 #define SERVICENAME_UNICODE (L"CrArk")
 #define DEVICENAME (_T("\\\\.\\CRARKSYS"))
 
+#define MUTEX_NAME (_T("C8DFBEC3-04C5-4b03-B0DB-E1B0D2D69D42"))
+
 //释放驱动到系统目录
 //若成功, Path返回驱动路径
 BOOL ReleaseDriver(TCHAR* Path)
@@ -180,6 +182,18 @@ BOOL InitApc()
 BOOL WINAPI CrInitialize()
 {
     HANDLE handle;
+    HANDLE mutex;
+
+    //只允许一个实例加载这个DLL文件
+    mutex = CreateMutex(NULL, TRUE, MUTEX_NAME);
+    if(mutex == NULL ||
+       GetLastError() == ERROR_ALREADY_EXISTS)
+    {
+        if(mutex)
+            CloseHandle(mutex);
+       return FALSE;
+    }
+    DLLMutex = mutex;
 
     //如果驱动已经加载
     if(DriverHandle != NULL &&
@@ -229,6 +243,8 @@ void WINAPI CrUninitialize()
     {
         CloseHandle(DriverHandle);
         UnloadDriver();
+        CloseHandle(DLLMutex);
         DriverHandle = INVALID_HANDLE_VALUE;
+        DLLMutex = NULL;
     }
 }
