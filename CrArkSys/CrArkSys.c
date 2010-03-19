@@ -67,6 +67,18 @@ NTSTATUS CRARKSYS_DispatchDeviceControl(
         Irp->IoStatus.Status = DispatchQueryProcessInfo(inputBuffer, inputLength, outputBuffer, outputLength, information);
         break;
 
+    case IOCTL_CRARKSYS_QUERYTHREADINFO:
+        Irp->IoStatus.Status = DispatchQueryThreadInfo(inputBuffer, inputLength, outputBuffer, outputLength, information);
+        break;
+
+    case IOCTL_CRARKSYS_QUERYPROCMODULE:
+        Irp->IoStatus.Status = DispatchQueryProcessModuleList(inputBuffer, inputLength, outputBuffer, outputLength, information);
+        break;
+
+    case IOCTL_CRARKSYS_QUERYMODULEINFO:
+        Irp->IoStatus.Status = DispatchQueryProcessModuleInfo(inputBuffer, inputLength, outputBuffer, outputLength, information);
+        break;
+
 	default:
 		Irp->IoStatus.Status = STATUS_INVALID_DEVICE_REQUEST;
 		Irp->IoStatus.Information = 0;

@@ -118,7 +118,7 @@ DispatchThreadEnum(PVOID InputBuffer, ULONG InputLength,
        OutputLength != sizeof(ObjectIdTable))
     {
         KdPrint(("DispatchThreadEnum Param mismatch: InputLength == %lu(should be %lu), OutputLength == %lu(should be %lu)",
-            InputLength, sizeof(BOOLEAN), OutputLength, sizeof(ObjectIdTable)));
+            InputLength, sizeof(PEPROCESS), OutputLength, sizeof(ObjectIdTable)));
         return STATUS_INVALID_PARAMETER;
     }
 
@@ -175,7 +175,7 @@ DispatchQueryProcessName(PVOID InputBuffer, ULONG InputLength,
        OutputLength != sizeof(ProcessNameInfo))
     {
         KdPrint(("DispatchQueryProcessName Param mismatch: InputLength == %lu(should be %lu), OutputLength == %lu(should be %lu)",
-            InputLength, sizeof(BOOLEAN), OutputLength, sizeof(ObjectIdTable)));
+            InputLength, sizeof(PEPROCESS), OutputLength, sizeof(ProcessNameInfo)));
         return STATUS_INVALID_PARAMETER;
     }
 
@@ -228,7 +228,7 @@ DispatchQueryProcessInfo(PVOID InputBuffer, ULONG InputLength,
        OutputLength != sizeof(ProcessInfo))
     {
         KdPrint(("DispatchQueryProcessInfo Param mismatch: InputLength == %lu(should be %lu), OutputLength == %lu(should be %lu)",
-            InputLength, sizeof(BOOLEAN), OutputLength, sizeof(ObjectIdTable)));
+            InputLength, sizeof(PEPROCESS), OutputLength, sizeof(ProcessInfo)));
        return STATUS_INVALID_PARAMETER;
     }
 
@@ -262,5 +262,176 @@ DispatchQueryProcessInfo(PVOID InputBuffer, ULONG InputLength,
         *Information = OutputLength;
 
     ExFreePool(processInfo);
+    return status;
+}
+
+
+//获取线程信息
+//InputBuffer[0] == PETHREAD指针
+//OutputBuffer threadInfo缓冲
+NTSTATUS
+DispatchQueryThreadInfo(PVOID InputBuffer, ULONG InputLength,
+                        PVOID OutputBuffer, ULONG OutputLength,
+                        PULONG Information)
+{
+    NTSTATUS status;
+    PETHREAD thread;
+    PThreadInfo threadInfo;
+
+    *Information = 0;
+    if(InputBuffer == NULL ||
+       InputLength != sizeof(PETHREAD) ||
+       OutputBuffer == NULL ||
+       OutputLength != sizeof(ThreadInfo))
+    {
+        KdPrint(("DispatchQueryThreadInfo Param mismatch: InputLength == %lu(should be %lu), OutputLength == %lu(should be %lu)",
+            InputLength, sizeof(PETHREAD), OutputLength, sizeof(ThreadInfo)));
+        return STATUS_INVALID_PARAMETER;
+    }
+
+
+    try{
+        ProbeForRead(InputBuffer, InputLength, 1);
+        thread = *(PETHREAD*)(InputBuffer);
+        status = STATUS_SUCCESS;
+    }except(EXCEPTION_CONTINUE_EXECUTION){
+        status = STATUS_ACCESS_VIOLATION;
+    }
+    if(!NT_SUCCESS(status))
+    {
+        KdPrint(("DispatchQueryThreadInfo ACCESS_VIOLATION read.\n"));
+        return status;
+    }
+
+    threadInfo = QueryThreadInfo(thread);
+    if(threadInfo == NULL)
+        return STATUS_UNSUCCESSFUL;
+
+    try{
+        ProbeForWrite(OutputBuffer, OutputLength, 1);
+        RtlCopyMemory(OutputBuffer, threadInfo, OutputLength);
+        status = STATUS_SUCCESS;
+    }except(EXCEPTION_CONTINUE_EXECUTION){
+        KdPrint(("DispatchQueryThreadInfo ACCESS_VIOLATION write.\n"));
+        status = STATUS_ACCESS_VIOLATION;
+    }
+
+    if(NT_SUCCESS(status))
+        *Information = OutputLength;
+    ExFreePool(threadInfo);
+    return status;
+}
+
+
+//获取进程的模块列表
+//InputBuffer[0] == PEPROCESS指针
+//OutputBuffer ProcessModuleList缓冲
+NTSTATUS
+DispatchQueryProcessModuleList(PVOID InputBuffer, ULONG InputLength,
+                               PVOID OutputBuffer, ULONG OutputLength,
+                               PULONG Information)
+{
+    NTSTATUS status;
+    PEPROCESS process;
+    PProcessModuleList processModList;
+
+    *Information = 0;
+    if(InputBuffer == NULL ||
+       InputLength != sizeof(PEPROCESS) ||
+       OutputBuffer == NULL ||
+       OutputLength != sizeof(ProcessModuleList))
+    {
+        KdPrint(("DispatchQueryProcessModuleList Param mismatch: InputLength == %lu(should be %lu), OutputLength == %lu(should be %lu)",
+            InputLength, sizeof(PEPROCESS), OutputLength, sizeof(ProcessModuleList)));
+        return STATUS_INVALID_PARAMETER;
+    }
+
+    try{
+        ProbeForRead(InputBuffer, InputLength, 1);
+        process = *(PEPROCESS*)InputBuffer;
+        status = STATUS_SUCCESS;
+    }except(EXCEPTION_CONTINUE_EXECUTION){
+        status = STATUS_ACCESS_VIOLATION;
+    }
+    if(!NT_SUCCESS(status))
+    {
+        KdPrint(("DispatchQueryProcessModuleList ACCESS_VIOLATION read.\n"));
+        return status;
+    }
+
+    processModList = QueryProcessModuleList(process);
+    if(processModList == NULL)
+        return STATUS_UNSUCCESSFUL;
+
+    try{
+        ProbeForWrite(OutputBuffer, OutputLength, 1);
+        RtlCopyMemory(OutputBuffer, processModList, OutputLength);
+        status = STATUS_SUCCESS;
+    }except(EXCEPTION_CONTINUE_EXECUTION){
+        KdPrint(("DispatchQueryProcessModuleList ACCESS_VIOLATION write.\n"));
+        status = STATUS_ACCESS_VIOLATION;
+    }
+
+    if(NT_SUCCESS(status))
+        *Information = OutputLength;
+    ExFreePool(processModList);
+    return status;
+}
+
+//获取进程的模块信息
+//InputBuffer[0] == PEPROCESS指针
+//InputBuffer[1] == LdrData指针
+//OutputBuffer ModuleInfo缓冲
+NTSTATUS
+DispatchQueryProcessModuleInfo(PVOID InputBuffer, ULONG InputLength,
+                               PVOID OutputBuffer, ULONG OutputLength,
+                               PULONG Information)
+{
+    NTSTATUS status;
+    PEPROCESS process;
+    PVOID ldrData;
+    PModuleInfo modInfo;
+
+    *Information = 0;
+    if(InputBuffer == NULL ||
+        InputLength != sizeof(PEPROCESS) + sizeof(PVOID)||
+        OutputBuffer == NULL ||
+        OutputLength != sizeof(ModuleInfo))
+    {
+        KdPrint(("DispatchQueryProcessModuleInfo Param mismatch: InputLength == %lu(should be %lu), OutputLength == %lu(should be %lu)",
+            InputLength, sizeof(PEPROCESS) + sizeof(PVOID), OutputLength, sizeof(ModuleInfo)));
+        return STATUS_INVALID_PARAMETER;
+    }
+
+    try{
+        ProbeForRead(InputBuffer, InputLength, 1);
+        process = *(PEPROCESS*)InputBuffer;
+        ldrData = *(PVOID*)((ULONG)InputBuffer + 4);
+        status = STATUS_SUCCESS;
+    }except(EXCEPTION_CONTINUE_EXECUTION){
+        status = STATUS_ACCESS_VIOLATION;
+    }
+    if(!NT_SUCCESS(status))
+    {
+        KdPrint(("DispatchQueryProcessModuleInfo ACCESS_VIOLATION read.\n"));
+        return status;
+    }
+
+    modInfo = QueryModuleInfo(process, ldrData);
+    if(modInfo == NULL)
+        return STATUS_UNSUCCESSFUL;
+
+    try{
+        ProbeForWrite(OutputBuffer, OutputLength, 1);
+        RtlCopyMemory(OutputBuffer, modInfo, OutputLength);
+        status = STATUS_SUCCESS;
+    }except(EXCEPTION_CONTINUE_EXECUTION){
+        KdPrint(("DispatchQueryProcessModuleInfo ACCESS_VIOLATION write.\n"));
+        status = STATUS_ACCESS_VIOLATION;
+    }
+
+    if(NT_SUCCESS(status))
+        *Information = OutputLength;
+    ExFreePool(modInfo);
     return status;
 }
