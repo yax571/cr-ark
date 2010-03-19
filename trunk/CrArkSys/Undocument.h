@@ -81,6 +81,20 @@ KeInsertQueueApc (
                   __in KPRIORITY Increment
                   );
 
+NTKERNELAPI
+VOID
+NTAPI
+KeInitializeApc (
+                 __out PRKAPC Apc,
+                 __in PRKTHREAD Thread,
+                 __in PVOID Environment,
+                 __in PKKERNEL_ROUTINE KernelRoutine,
+                 __in_opt PKRUNDOWN_ROUTINE RundownRoutine,
+                 __in_opt PKNORMAL_ROUTINE NormalRoutine,
+                 __in_opt KPROCESSOR_MODE ProcessorMode,
+                 __in_opt PVOID NormalContext
+                 );
+
 
 typedef struct _ServiceDescriptorTable {
     PULONG ServiceTable;

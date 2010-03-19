@@ -19,4 +19,5 @@ SOURCES=CrArkSys.c \
 		Query.c \
 		helper.c \
 		Dispatch.c \
+		Terminate.c \
 		CrArkSys.rc

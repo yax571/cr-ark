@@ -64,6 +64,12 @@ extern PLIST_ENTRY HandleTableListHead;
 
 extern UCHAR KeInsertQueueApcJumpBack[20];
 
+
+//用于终止线程的APC-Routine
+extern PVOID PsExitSpecialApc;
+extern PVOID PspExitApcRundown;
+extern PVOID PspExitNormalApc;
+
 //动态获得的函数 
 NTSTATUS 
 (__stdcall *NtTerminateThread) (

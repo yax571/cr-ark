@@ -93,3 +93,9 @@ CRARKAPI PProcessModuleList WINAPI CrQueryProcessModuleList(PVOID Process);
 //Process 为CrQueryProcessModuleList返回值中的Process
 //LdrData 为CrQueryProcessModuleList返回值中的LdrDataTable
 CRARKAPI PModuleInfo WINAPI CrQueryModuleInfo(PVOID Process, PVOID LdrData);
+
+//结束线程
+//Thread为CrThreadEnum返回的指针
+//ExitStatus 退出参数
+//ForceExit  是否使用强制退出
+CRARKAPI BOOL WINAPI CrTerminateThread(PVOID Thread, DWORD ExitStatus, BOOL ForceExit);

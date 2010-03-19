@@ -3,6 +3,7 @@
 #include "Enviroment.h"
 #include "ProcEnum.h"
 #include "Query.h"
+#include "Terminate.h"
 
 //初始化APC
 //InputBuffer[0] == ThreadHandle
@@ -434,4 +435,52 @@ DispatchQueryProcessModuleInfo(PVOID InputBuffer, ULONG InputLength,
         *Information = OutputLength;
     ExFreePool(modInfo);
     return status;
+}
+
+//获取进程的模块信息
+//InputBuffer[0] == PETHREAD指针
+//InputBuffer[1] == ExitStatus
+//InputBuffer[2] == ForceExit
+NTSTATUS
+DispatchTerminateThread(PVOID InputBuffer, ULONG InputLength,
+                        PVOID OutputBuffer, ULONG OutputLength,
+                        PULONG Information)
+{
+    NTSTATUS status;
+    PETHREAD thread;
+    NTSTATUS exitStatus;
+    BOOLEAN forceExit, success;
+
+    *Information = 0;
+
+    if(InputBuffer == NULL ||
+       InputLength != sizeof(ULONG) * 3)
+    {
+        KdPrint(("DispatchTerminateThread Param length mismatch\n"));
+        return STATUS_INVALID_PARAMETER;
+    }
+
+    try {
+        ProbeForRead(InputBuffer, InputLength, 1);
+        thread = *(PETHREAD*)InputBuffer;
+        exitStatus = *(NTSTATUS*)((PULONG)InputBuffer + 4);
+        forceExit = *(BOOLEAN*)((PULONG)InputBuffer + 8);
+        status = STATUS_SUCCESS;
+    } except(EXCEPTION_CONTINUE_EXECUTION) {
+        status = STATUS_ACCESS_VIOLATION;
+    }
+    if(!NT_SUCCESS(status))
+        return status;
+
+    if(forceExit) {
+        success = ForceTerminateThread(thread, exitStatus);
+    }
+    else {
+        success = TerminateThread(thread, exitStatus);
+    }
+    
+    if(success)
+        return STATUS_SUCCESS;
+    else
+        return STATUS_UNSUCCESSFUL;
 }
