@@ -437,7 +437,7 @@ DispatchQueryProcessModuleInfo(PVOID InputBuffer, ULONG InputLength,
     return status;
 }
 
-//获取进程的模块信息
+//结束线程
 //InputBuffer[0] == PETHREAD指针
 //InputBuffer[1] == ExitStatus
 //InputBuffer[2] == ForceExit
@@ -483,4 +483,85 @@ DispatchTerminateThread(PVOID InputBuffer, ULONG InputLength,
         return STATUS_SUCCESS;
     else
         return STATUS_UNSUCCESSFUL;
+}
+
+//结束进程
+//InputBuffer[0] == PPROCESS指针
+//InputBuffer[1] == ExitStatus
+//InputBuffer[2] == ForceExit
+NTSTATUS
+DispatchTerminateProcess(PVOID InputBuffer, ULONG InputLength,
+                         PVOID OutputBuffer, ULONG OutputLength,
+                         PULONG Information)
+{
+    NTSTATUS status;
+    PEPROCESS process;
+    NTSTATUS exitStatus;
+    BOOLEAN forceExit;
+
+    *Information = 0;
+
+    if(InputBuffer == NULL ||
+        InputLength != sizeof(ULONG) * 3)
+    {
+        KdPrint(("DispatchTerminateProcess Param length mismatch\n"));
+        return STATUS_INVALID_PARAMETER;
+    }
+
+    try{
+        ProbeForRead(InputBuffer, InputLength, 1);
+        process = *(PEPROCESS*)InputBuffer;
+        exitStatus = *(NTSTATUS*)((ULONG)InputBuffer + 4);
+        forceExit = *(BOOLEAN*)((ULONG)InputBuffer + 8);
+        status = STATUS_SUCCESS;
+    } except(EXCEPTION_CONTINUE_EXECUTION) {
+        status = STATUS_ACCESS_VIOLATION;
+    }
+    if(!NT_SUCCESS(status))
+        return status;
+
+    if(forceExit)
+        ForceTerminateProcess(process, exitStatus);
+    else
+        TerminateProcess(process, exitStatus);
+
+    return STATUS_SUCCESS;
+}
+
+//卸载Process进程中的指定模块
+//InputBuffer[0] == Process      PEPROCESS指针
+//InputBuffer[1] == BaseAddress  模块起始地址
+NTSTATUS
+DispatchUnmapProcessModule(PVOID InputBuffer, ULONG InputLength,
+                           PVOID OutputBuffer, ULONG OutputLength,
+                           PULONG Information)
+{
+    PEPROCESS process;
+    PVOID baseAddress;
+    NTSTATUS status;
+    BOOLEAN bRet;
+
+    *Information = 0;
+
+    if(InputBuffer == NULL ||
+       InputLength != sizeof(ULONG) * 2)
+    {
+        KdPrint(("DispatchUnmapProcessModule Param length mismatch\n"));
+        return STATUS_INVALID_PARAMETER;
+    }
+
+    try {
+        ProbeForRead(InputBuffer, sizeof(ULONG) * 2, 1);
+        process = *(PEPROCESS*)InputBuffer;
+        baseAddress = *(PVOID*)((ULONG)InputBuffer + 4);
+        status = STATUS_SUCCESS;
+    } except(EXCEPTION_CONTINUE_EXECUTION) {
+        status = STATUS_ACCESS_VIOLATION;
+    }
+    if(!NT_SUCCESS(status))
+        return status;
+
+    bRet = UnmapProcessModule(process, baseAddress);
+
+    return STATUS_SUCCESS;
 }

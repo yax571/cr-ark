@@ -20,4 +20,5 @@ SOURCES=CrArkSys.c \
 		helper.c \
 		Dispatch.c \
 		Terminate.c \
+		Protect.c \
 		CrArkSys.rc

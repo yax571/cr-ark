@@ -204,3 +204,44 @@ BOOL WINAPI CrTerminateThread(PVOID Thread, DWORD ExitStatus, BOOL ForceExit)
 
     return bRet;
 }
+
+//结束进程
+//Process为CrProcessEnum返回的指针
+//ExitStatus 退出参数
+//ForceExit  是否使用强制退出
+BOOL WINAPI CrTerminateProcess(PVOID Process, DWORD ExitStatus, BOOL ForceExit)
+{
+    DWORD input[3];
+    BOOL bRet;
+    DWORD dwRet;
+
+    input[0] = (DWORD)Process;
+    input[1] = (DWORD)ExitStatus;
+    input[2] = (DWORD)ForceExit;
+
+    bRet = DeviceIoControl(DriverHandle, IOCTL_CRARKSYS_TERMINATEPROC,
+                           input, sizeof(input),
+                           NULL, 0,
+                           &dwRet, NULL);
+
+    return bRet;
+}
+
+//卸载Process进程中的指定模块
+//BaseAddress  模块起始地址
+BOOL WINAPI CrUnmapProcessModule(PVOID Process, PVOID BaseAddress)
+{
+    DWORD input[2];
+    BOOL bRet;
+    DWORD dwRet;
+
+    input[0] = (DWORD)Process;
+    input[1] = (DWORD)BaseAddress;
+
+    bRet = DeviceIoControl(DriverHandle, IOCTL_CRARKSYS_UNMAPMODULE,
+                           input, sizeof(input),
+                           NULL, 0,
+                           &dwRet, NULL);
+
+    return bRet;
+}

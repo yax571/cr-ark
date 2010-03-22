@@ -1,56 +1,147 @@
 #include <windows.h>
 #include <stdio.h>
+#include <string.h>
 #include "..\CrArkKrnl\CrArkKrnl.h"
+
+char Cmd[128];
+PObjectIdTable ProcessList;
+
+void UpdateProcessList() 
+{
+    if(ProcessList)
+        delete ProcessList;
+
+    ProcessList = CrProcessEnum(TRUE);
+}
+
+void ListProcess() {
+    PProcessNameInfo processNameInfo;
+    int i;
+
+    UpdateProcessList();
+
+    if(ProcessList) {
+        for(i = 0; i < ProcessList->Count; i++) {
+            printf("EPROCESS: %8.8X  PID: %lu ", ProcessList->Entry[i].Object, ProcessList->Entry[i].UniqueId);
+            processNameInfo = CrQueryProcessName(ProcessList->Entry[i].Object);
+            if(processNameInfo) {
+                printf("ImageName: %s\n\tFullPath: %s\n", processNameInfo->ImageName, processNameInfo->FullPath);
+                delete processNameInfo;
+            }
+        }
+    }
+}
+
+void ListProcessInfo() 
+{
+    int pid, i, j;
+    PProcessInfo processInfo;
+    PObjectIdTable threadTable;
+
+    UpdateProcessList();
+
+    printf("pid: ");
+    scanf("%d", &pid);
+    for(i = 0; i < ProcessList->Count; i++) {
+        if(ProcessList->Entry[i].UniqueId == pid) {
+            processInfo = CrQueryProcessInfo(ProcessList->Entry[i].Object);
+            if(!processInfo)
+                break;
+            printf("Pid: %lu ParentPid: %lu HandleCount:%lu\n", processInfo->UniqueProcessId,
+                               processInfo->InheritedFromUniqueProcessId,
+                               processInfo->HandleCount);
+            delete processInfo;
+
+            threadTable = CrThreadEnum(ProcessList->Entry[i].Object);
+            if(!threadTable)
+                break;
+            for(j = 0; j < threadTable->Count; j++) {
+                printf("\tETHREAD: %8.8X\tTID: %lu\n", threadTable->Entry[j].Object, threadTable->Entry[j].UniqueId);
+            }
+            delete threadTable;
+            break;
+        }
+    }
+}
+
+void TerminateThread()
+{
+    int pid, tid, force;
+    PObjectIdTable threadTable;
+
+    UpdateProcessList();
+
+    printf("PID: ");
+    scanf("%d", &pid);
+    printf("TID: ");
+    scanf("%d", &tid);
+    printf("Force End: ");
+    scanf("%d", &force);
+
+    for(int i = 0; i < ProcessList->Count; i++) {
+        if(ProcessList->Entry[i].UniqueId == pid) {
+            threadTable = CrThreadEnum(ProcessList->Entry[i].Object);
+            if(threadTable)
+            {
+                for(int j = 0; j < threadTable->Count; j++) {
+                    if(threadTable->Entry[j].UniqueId == tid) {
+                        CrTerminateThread(threadTable->Entry[j].Object, 0, force);
+                        break;
+                    }
+                }
+                delete threadTable;
+            }
+            break;
+        }
+    }
+}
+
+void TerminateProcess()
+{
+    int pid, i;
+    printf("pid: ");
+    scanf("%d", &pid);
+    
+    UpdateProcessList();
+    for(i = 0; i < ProcessList->Count; i++) {
+        if(ProcessList->Entry[i].UniqueId == pid)
+        {
+            CrTerminateProcess(ProcessList->Entry[i].Object, 0, TRUE);
+            break;
+        }
+    }
+}
 
 int main()
 {
-    if(CrInitialize())
-        printf("initialize ok..\n");
-    else
+    if(!CrInitialize())
     {
-        printf("fail.\n");
+        fprintf(stderr, "can not initialize driver.\n");
         return 0;
     }
 
-    PObjectIdTable objIdTable;
-    PObjectIdTable objThreadTable;
-    PProcessNameInfo processNameInfo;
-    PProcessInfo processInfo;
-    PThreadInfo threadInfo;
-    PProcessModuleList modList;
-    PModuleInfo modInfo;
+    ProcessList = NULL;
 
-    objIdTable = CrProcessEnum(TRUE);
-    if(objIdTable)
-    {
-        for(unsigned int i = 0; i < objIdTable->Count; i++)
-        {
-            printf("EPROCESS: %8.8X\tPID:%lu\n", objIdTable->Entry[i].Object, objIdTable->Entry[i].UniqueId);
-            processNameInfo = CrQueryProcessName(objIdTable->Entry[i].Object);
-            if(processNameInfo)
-            {
-                printf("\tName: %s\tFullPath: %s\n", processNameInfo->ImageName, processNameInfo->FullPath);
-                delete processNameInfo;
-            }
-            modList = CrQueryProcessModuleList(objIdTable->Entry[i].Object);
-            if(modList)
-            {
-                for(int j = 0; j < modList->Count; j++)
-                {
-                    modInfo = CrQueryModuleInfo(modList->Process, modList->LdrDataTable[j]);
-                    if(modInfo)
-                    {
-                        printf("\t Module: Base Address: %8.8X, EntryPoint: %8.8X, SizeOfImage: %lu, FullPath: %s\n", 
-                            modInfo->BaseAddress, modInfo->EntryPoint, modInfo->SizeOfImage, modInfo->FullPath);
-                        delete modInfo;
-                    }
-                }
-                delete modList;
-            }
+    while(1) {
+        printf("cmd> ");
+        scanf("%s", Cmd);
+        if(stricmp(Cmd, "Exit") == 0) {
+            break;
         }
-        delete objIdTable;
+        else if(stricmp(Cmd, "ListProcess") == 0) {
+            ListProcess();
+        }
+        else if(stricmp(Cmd, "ListProcessInfo") == 0) {
+            ListProcessInfo();
+        }
+        else if(stricmp(Cmd, "TerminateThread") == 0) {
+            TerminateThread();
+        }
+        else if(stricmp(Cmd, "TerminateProcess") == 0) {
+            TerminateProcess();
+        }
     }
 
-    getchar();
+    CrUninitialize();
     return 0;
 }

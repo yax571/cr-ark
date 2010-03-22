@@ -70,6 +70,12 @@ NTSTATUS
                       __in NTSTATUS ExitStatus
                       );
 
+NTSTATUS
+(__stdcall *NtTerminateProcess)(
+                   __in_opt HANDLE ProcessHandle,
+                   __in NTSTATUS ExitStatus
+                   );
+
 //搜索PsLookProcessThreadByCide函数, 取得未导出的PspCidTable地址
 BOOLEAN
 GetPspCidTableAddress()
@@ -239,17 +245,20 @@ GetServicesFunction()
 {
     ULONG buildNo;
     ULONG ZwTerminateThreadNo;
+    ULONG ZwTerminateProcessNo;
 
     PsGetVersion(NULL, NULL, &buildNo, NULL);
 
     switch(buildNo)
     {
     case 2600:          //winxp
+        ZwTerminateProcessNo = 0x101;
         ZwTerminateThreadNo = 0x102;
         break;
     }
 
     *(PULONG)(&NtTerminateThread) = KeServiceDescriptorTable.ServiceTable[ZwTerminateThreadNo];
+    *(PULONG)(&NtTerminateProcess) = KeServiceDescriptorTable.ServiceTable[ZwTerminateProcessNo];
     return TRUE;
 }
 

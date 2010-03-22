@@ -64,7 +64,7 @@ DispatchQueryProcessModuleInfo(PVOID InputBuffer, ULONG InputLength,
                                PVOID OutputBuffer, ULONG OutputLength,
                                PULONG Information);
 
-//获取进程的模块信息
+//结束线程
 //InputBuffer[0] == PETHREAD指针
 //InputBuffer[1] == ExitStatus
 //InputBuffer[2] == ForceExit
@@ -72,3 +72,20 @@ NTSTATUS
 DispatchTerminateThread(PVOID InputBuffer, ULONG InputLength,
                         PVOID OutputBuffer, ULONG OutputLength,
                         PULONG Information);
+
+//结束进程
+//InputBuffer[0] == PPROCESS指针
+//InputBuffer[1] == ExitStatus
+//InputBuffer[2] == ForceExit
+NTSTATUS
+DispatchTerminateProcess(PVOID InputBuffer, ULONG InputLength,
+                         PVOID OutputBuffer, ULONG OutputLength,
+                         PULONG Information);
+
+//卸载Process进程中的指定模块
+//InputBuffer[0] == Process      PEPROCESS指针
+//InputBuffer[1] == BaseAddress  模块起始地址
+NTSTATUS
+DispatchUnmapProcessModule(PVOID InputBuffer, ULONG InputLength,
+                           PVOID OutputBuffer, ULONG OutputLength,
+                           PULONG Information);

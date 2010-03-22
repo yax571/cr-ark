@@ -83,6 +83,14 @@ NTSTATUS CRARKSYS_DispatchDeviceControl(
         Irp->IoStatus.Status = DispatchTerminateThread(inputBuffer, inputLength, outputBuffer, outputLength, information);
         break;
 
+    case IOCTL_CRARKSYS_TERMINATEPROC:
+        Irp->IoStatus.Status = DispatchTerminateProcess(inputBuffer, inputLength, outputBuffer, outputLength, information);
+        break;
+
+    case IOCTL_CRARKSYS_UNMAPMODULE:
+        Irp->IoStatus.Status = DispatchUnmapProcessModule(inputBuffer, inputLength, outputBuffer, outputLength, information);
+        break;
+
 	default:
 		Irp->IoStatus.Status = STATUS_INVALID_DEVICE_REQUEST;
 		Irp->IoStatus.Information = 0;
