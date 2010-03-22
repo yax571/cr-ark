@@ -99,3 +99,13 @@ CRARKAPI PModuleInfo WINAPI CrQueryModuleInfo(PVOID Process, PVOID LdrData);
 //ExitStatus 退出参数
 //ForceExit  是否使用强制退出
 CRARKAPI BOOL WINAPI CrTerminateThread(PVOID Thread, DWORD ExitStatus, BOOL ForceExit);
+
+//结束进程
+//Process为CrProcessEnum返回的指针
+//ExitStatus 退出参数
+//ForceExit  是否使用强制退出
+CRARKAPI BOOL WINAPI CrTerminateProcess(PVOID Process, DWORD ExitStatus, BOOL ForceExit);
+
+//卸载Process进程中的指定模块
+//BaseAddress  模块起始地址
+CRARKAPI BOOL WINAPI CrUnmapProcessModule(PVOID Process, PVOID BaseAddress);

@@ -9,3 +9,17 @@ TerminateThread(PETHREAD Thread,
 BOOLEAN
 ForceTerminateThread(PETHREAD Thread,
                      NTSTATUS ExitStatus);
+
+//普通方式结束进程
+BOOLEAN
+TerminateProcess(PEPROCESS Process, 
+                 NTSTATUS uExitCode );
+
+//使用APC结束进程
+BOOLEAN
+ForceTerminateProcess(PEPROCESS Process,
+                      NTSTATUS ExitStatus);
+
+//卸载Process进程中的以BaseAddress为起始地址的模块
+BOOLEAN
+UnmapProcessModule(PEPROCESS Process, PVOID BaseAddress);

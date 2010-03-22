@@ -98,6 +98,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Protect.c"
+				>
+			</File>
+			<File
 				RelativePath=".\Query.c"
 				>
 			</File>
@@ -147,6 +151,10 @@
 			</File>
 			<File
 				RelativePath=".\ProcEnum.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Protect.h"
 				>
 			</File>
 			<File

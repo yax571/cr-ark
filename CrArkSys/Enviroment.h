@@ -71,8 +71,16 @@ extern PVOID PspExitApcRundown;
 extern PVOID PspExitNormalApc;
 
 //动态获得的函数 
+extern
 NTSTATUS 
 (__stdcall *NtTerminateThread) (
                     __in_opt HANDLE ThreadHandle,
                     __in NTSTATUS ExitStatus
                      );
+
+extern
+NTSTATUS
+(__stdcall *NtTerminateProcess)(
+                                __in_opt HANDLE ProcessHandle,
+                                __in NTSTATUS ExitStatus
+                                );
