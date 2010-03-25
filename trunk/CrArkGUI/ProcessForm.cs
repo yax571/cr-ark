@@ -12,7 +12,14 @@ namespace CrArkGUI
     {
         public ProcessForm()
         {
+            ListViewItem item;
             InitializeComponent();
+
+            item = new ListViewItem("csrss.exe");
+            item.SubItems.Add("123");
+            item.SubItems.Add(@"c:\windows\csrss.exe");
+            item.SubItems.Add("0x123456");
+            listViewProcess.Items.Add(item);
         }
     }
 }
