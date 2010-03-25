@@ -7,6 +7,7 @@
 #include "ProcEnum.h"
 #include "Query.h"
 #include "helper.h"
+#include "Protect.h"
 
 
 PDRIVER_OBJECT pdoGlobalDrvObj = 0;
@@ -91,6 +92,10 @@ NTSTATUS CRARKSYS_DispatchDeviceControl(
         Irp->IoStatus.Status = DispatchUnmapProcessModule(inputBuffer, inputLength, outputBuffer, outputLength, information);
         break;
 
+    case IOCTL_CRARKSYS_PROTECT:
+        Irp->IoStatus.Status = DispatchProtectObject(inputBuffer, inputLength, outputBuffer, outputLength, information);
+        break;
+
 	default:
 		Irp->IoStatus.Status = STATUS_INVALID_DEVICE_REQUEST;
 		Irp->IoStatus.Information = 0;
@@ -109,6 +114,7 @@ VOID CRARKSYS_DriverUnload(
 	PDEVICE_OBJECT pdoNextDeviceObj = pdoGlobalDrvObj->DeviceObject;
     //Îª°²È«¿¼ÂÇ
     UnhookFunction(KeInsertQueueApc, KeInsertQueueApcJumpBack);
+    ProtectCleanup();
 
 	IoDeleteSymbolicLink(&usSymlinkName);
 
