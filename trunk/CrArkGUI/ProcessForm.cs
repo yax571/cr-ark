@@ -8,9 +8,9 @@ using System.Windows.Forms;
 
 namespace CrArkGUI
 {
-    public partial class Form1 : Form
+    public partial class ProcessForm : Form
     {
-        public Form1()
+        public ProcessForm()
         {
             InitializeComponent();
         }
