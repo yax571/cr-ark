@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("CrArkGUI")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Cr-AntiRootkit")]
+[assembly: AssemblyDescription("Cr-AntiRootkit GUI")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Lenovo (Beijing) Limited")]
-[assembly: AssemblyProduct("CrArkGUI")]
-[assembly: AssemblyCopyright("Copyright © Lenovo (Beijing) Limited 2010")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("Cr-AntiRootkit")]
+[assembly: AssemblyCopyright("By Cradiator")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
