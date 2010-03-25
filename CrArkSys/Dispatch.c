@@ -4,6 +4,7 @@
 #include "ProcEnum.h"
 #include "Query.h"
 #include "Terminate.h"
+#include "Protect.h"
 
 //初始化APC
 //InputBuffer[0] == ThreadHandle
@@ -564,4 +565,40 @@ DispatchUnmapProcessModule(PVOID InputBuffer, ULONG InputLength,
     bRet = UnmapProcessModule(process, baseAddress);
 
     return STATUS_SUCCESS;
+}
+
+//保护对象
+//InputBuffer[0] == Object
+//InputBuffer[1] == 是否删除
+NTSTATUS
+DispatchProtectObject(PVOID InputBuffer, ULONG InputLength,
+                      PVOID OutputBuffer, ULONG OutputLength,
+                      PULONG Information)
+{
+    PVOID object;
+    BOOLEAN remove;
+    NTSTATUS status;
+
+    *Information = 0;
+
+    if(InputBuffer == NULL ||
+       InputLength != sizeof(ULONG) * 2)
+    {
+        KdPrint(("DispatchProtectObject Param length mismatch\n"));
+        return STATUS_INVALID_PARAMETER;
+    }
+
+    try {
+        ProbeForRead(InputBuffer, sizeof(ULONG) * 2, 1);
+        object = *(PVOID*)InputBuffer;
+        remove = (BOOLEAN)(*(PULONG)((ULONG)InputBuffer + 4));
+        status = STATUS_SUCCESS;
+    } except(EXCEPTION_CONTINUE_EXECUTION) {
+        status = STATUS_ACCESS_VIOLATION;
+    }
+    if(!NT_SUCCESS(status))
+        return status;
+
+    ProtectAddObject(object, remove);
+    return status;
 }

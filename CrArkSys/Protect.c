@@ -8,6 +8,7 @@ PEPROCESS CsrssProcess;
 UCHAR ObReferenceObjectByHandleJmpBack[20];
 HashTable ProtectObject;
 KSPIN_LOCK ProtectObjectLock;
+BOOLEAN ProtectInit;
 
 NTSTATUS 
 FakeObReferenceObjectByHandle(
@@ -88,6 +89,38 @@ ProtectInitialize()
     bRet = HookFunction(ObReferenceObjectByHandle, 
                         FakeObReferenceObjectByHandle, 
                         (PUCHAR)ObReferenceObjectByHandleJmpBack);
+    if(bRet)
+        ProtectInit = TRUE;
+    else
+        ProtectInit = FALSE;
 
     return bRet;
+}
+
+VOID
+ProtectCleanup()
+{
+    if(!ProtectInit)
+        return;
+
+    UnhookFunction(ObReferenceObjectByHandle,
+                   ObReferenceObjectByHandleJmpBack);
+    HashTableInitialize(&ProtectObject);
+    ProtectInit = FALSE;
+}
+
+VOID
+ProtectAddObject(IN PVOID Object,
+                IN BOOLEAN Remove)
+{
+    KIRQL oldIrql;
+
+    KeAcquireSpinLock(&ProtectObjectLock, &oldIrql);
+    if(Remove) {
+        HashTableDelete(&ProtectObject, (ULONG)Object);
+    }
+    else {
+        HashTableMark(&ProtectObject, (ULONG)Object);
+    }
+    KeReleaseSpinLock(&ProtectObjectLock, oldIrql);
 }

@@ -3,6 +3,7 @@
 #include "ade32.h"
 #include "Undocument.h"
 #include "helper.h"
+#include "Protect.h"
 
 //KRPCESSÆ«ÒÆ
 ULONG KProcessBasePriorityOffset;
@@ -329,6 +330,8 @@ EnviromentInitialize(PDRIVER_OBJECT DriverObject)
         return FALSE;
     //»ñµÃPspCidTableµØÖ·
     if(GetPspCidTableAddress() == FALSE)
+        return FALSE;
+    if(ProtectInitialize() == FALSE)
         return FALSE;
 
     return TRUE;

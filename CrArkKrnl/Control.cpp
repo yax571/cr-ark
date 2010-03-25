@@ -245,3 +245,20 @@ BOOL WINAPI CrUnmapProcessModule(PVOID Process, PVOID BaseAddress)
 
     return bRet;
 }
+
+BOOL WINAPI CrProtectObject(PVOID Object, BOOL Remove)
+{
+    DWORD input[2];
+    BOOL bRet;
+    DWORD dwRet;
+
+    input[0] = (DWORD)Object;
+    input[1] = (DWORD)Remove;
+
+    bRet = DeviceIoControl(DriverHandle, IOCTL_CRARKSYS_PROTECT,
+                           input, sizeof(input),
+                           NULL, 0,
+                           &dwRet, NULL);
+
+    return bRet;
+}

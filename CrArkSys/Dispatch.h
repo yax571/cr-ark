@@ -89,3 +89,11 @@ NTSTATUS
 DispatchUnmapProcessModule(PVOID InputBuffer, ULONG InputLength,
                            PVOID OutputBuffer, ULONG OutputLength,
                            PULONG Information);
+
+//保护对象
+//InputBuffer[0] == Object
+//InputBuffer[1] == 是否删除
+NTSTATUS
+DispatchProtectObject(PVOID InputBuffer, ULONG InputLength,
+                      PVOID OutputBuffer, ULONG OutputLength,
+                      PULONG Information);
