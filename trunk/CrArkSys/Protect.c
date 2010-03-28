@@ -1,8 +1,11 @@
 #include <ntifs.h>
+#include <string.h>
 #include "Protect.h"
 #include "ade32.h"
 #include "helper.h"
 #include "HashTable.h"
+#include "ProcEnum.h"
+#include "Query.h"
 
 PEPROCESS CsrssProcess;
 UCHAR ObReferenceObjectByHandleJmpBack[20];
@@ -83,9 +86,53 @@ BOOLEAN
 ProtectInitialize()
 {
     BOOLEAN bRet;
+    PObjectIdTable processTable;
+    PProcessNameInfo nameInfo;
+    ANSI_STRING ansiImageName;
+    ANSI_STRING ansiFullPath;
+    ANSI_STRING ansiCsrssPath;
+    ANSI_STRING ansiCsrss;
+    ULONG i;
 
+    KdPrint(("enter ProtectInitialize\n"));
     HashTableInitialize(&ProtectObject);
     KeInitializeSpinLock(&ProtectObjectLock);
+
+    //查找csrss.exe进程的EPROCESS
+    processTable = ProcessEnum(FALSE);
+    if(processTable == NULL) {
+        return FALSE;
+    }
+
+    RtlInitAnsiString(&ansiCsrss, "CSRSS.EXE");
+    RtlInitAnsiString(&ansiCsrssPath, "SYSTEM32\\CSRSS.EXE");
+    bRet = FALSE;
+    for(i = 0; i < processTable->Count; i++) {
+        nameInfo = QueryProcessName((PEPROCESS)processTable->Entry[i].Object);
+        if(nameInfo) {
+            RtlInitAnsiString(&ansiImageName, nameInfo->ImageName);
+            RtlInitAnsiString(&ansiFullPath, nameInfo->FullPath);
+            if(RtlCompareString(&ansiImageName, &ansiCsrss, TRUE) == 0 &&
+               ansiFullPath.Length > ansiCsrssPath.Length)
+            {
+                ansiFullPath.Buffer += ansiFullPath.Length - ansiCsrssPath.Length;
+                ansiFullPath.Length = ansiFullPath.MaximumLength = ansiCsrssPath.Length;
+                if(RtlCompareString(&ansiFullPath, &ansiCsrssPath, TRUE) == 0)
+                {
+                    CsrssProcess = (PEPROCESS)processTable->Entry[i].Object;
+                    bRet = TRUE;
+                }
+            }
+            ExFreePool(nameInfo);
+        }
+        if(bRet == TRUE)
+            break;
+    }
+    ExFreePool(processTable);
+    if(bRet == FALSE)
+        return bRet;
+
+    //挂钩函数
     bRet = HookFunction(ObReferenceObjectByHandle, 
                         FakeObReferenceObjectByHandle, 
                         (PUCHAR)ObReferenceObjectByHandleJmpBack);

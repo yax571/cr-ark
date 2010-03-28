@@ -14,6 +14,8 @@ int main(array<System::String ^> ^args)
         MessageBoxW(NULL, L"核心初始化失败", L"错误", MB_OK);
         return 0;
     }
+    //保护进程
+    CrProtectProcess(0, TRUE);
 
     // Enabling Windows XP visual effects before any controls are created
 	Application::EnableVisualStyles();
@@ -22,6 +24,7 @@ int main(array<System::String ^> ^args)
 	// Create the main window and run it
 	Application::Run(gcnew Form1());
 
+    CrProtectProcess(0, FALSE);
     CrUninitialize();
 	return 0;
 }

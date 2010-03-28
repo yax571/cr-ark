@@ -3,6 +3,13 @@
 #include "CrArkKrnl.h"
 #include "..\CrArkSys\CtrlCode.h"
 
+//释放其它函数生成的资源
+VOID WINAPI CrFreeMem(PVOID Address)
+{
+    if(Address != NULL)
+        delete Address;
+}
+
 //枚举进程
 PObjectIdTable WINAPI CrProcessEnum(BOOL ShowDeleting)
 {
@@ -246,6 +253,8 @@ BOOL WINAPI CrUnmapProcessModule(PVOID Process, PVOID BaseAddress)
     return bRet;
 }
 
+//保护对象
+//Remove == TRUE时取消保护
 BOOL WINAPI CrProtectObject(PVOID Object, BOOL Remove)
 {
     DWORD input[2];
@@ -261,4 +270,51 @@ BOOL WINAPI CrProtectObject(PVOID Object, BOOL Remove)
                            &dwRet, NULL);
 
     return bRet;
+}
+
+//保护进程和所属线程不被结束
+//Pid进程ID
+//Protect == TRUE   开始保护
+//        == FALSE  取消保护
+VOID WINAPI CrProtectProcess(DWORD Pid, BOOL Protect) 
+{
+    PObjectIdTable processTable = NULL;
+    PObjectIdTable threadTable = NULL;
+    DWORD i;
+
+    //PID为0时保护自身
+    if(Pid == 0) {
+        Pid = GetProcessId(GetCurrentProcess());
+    }
+
+    //枚举所有进程
+    processTable = CrProcessEnum(FALSE);
+    if(processTable == NULL) {
+        goto __CrProtectProcessExit;
+    }
+
+    //找到PID对应的进程
+    for(i = 0; i < processTable->Count; i++) {
+        if(processTable->Entry[i].UniqueId == Pid)
+            break;
+    }
+    if(i == processTable->Count)
+        goto __CrProtectProcessExit;
+
+    //枚举进程中的所有线程
+    threadTable = CrThreadEnum(processTable->Entry[i].Object);
+    if(threadTable == NULL)
+        goto __CrProtectProcessExit;
+
+    //保护进程和其中的线程
+    CrProtectObject(processTable->Entry[i].Object, !Protect);
+    for(i = 0; i < threadTable->Count; i++)
+        CrProtectObject(threadTable->Entry[i].Object, !Protect);
+
+    //清理资源、退出
+__CrProtectProcessExit:
+    if(processTable)
+        delete processTable;
+    if(threadTable)
+        delete threadTable;
 }
