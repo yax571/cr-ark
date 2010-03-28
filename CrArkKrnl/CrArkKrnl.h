@@ -59,6 +59,10 @@ typedef struct _ModuleInfo {
     char FullPath[FULL_PATH_LENGTH];
 }ModuleInfo, *PModuleInfo;
 
+
+//释放其它函数生成的资源
+CRARKAPI VOID WINAPI CrFreeMem(PVOID Address);
+
 //初始化dll文件
 //包括释放、加载、初始化、链接驱动程序
 CRARKAPI BOOL WINAPI CrInitialize();
@@ -109,3 +113,13 @@ CRARKAPI BOOL WINAPI CrTerminateProcess(PVOID Process, DWORD ExitStatus, BOOL Fo
 //卸载Process进程中的指定模块
 //BaseAddress  模块起始地址
 CRARKAPI BOOL WINAPI CrUnmapProcessModule(PVOID Process, PVOID BaseAddress);
+
+//保护对象
+//Remove == TRUE时取消保护
+CRARKAPI BOOL WINAPI CrProtectObject(PVOID Object, BOOL Remove);
+
+//保护进程和所属线程不被结束
+//Pid进程ID (Pid == 0时保护调用进程)
+//Protect == TRUE   开始保护
+//        == FALSE  取消保护
+CRARKAPI VOID WINAPI CrProtectProcess(DWORD Pid, BOOL Protect);

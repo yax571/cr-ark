@@ -204,6 +204,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\FormDetail.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\FormProcess.cpp"
 				>
 			</File>
@@ -233,6 +237,16 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\FormDetail.h"
+				FileType="3"
+				>
+				<File
+					RelativePath=".\FormDetail.resx"
+					SubType="Designer"
+					>
+				</File>
+			</File>
 			<File
 				RelativePath=".\FormMain.h"
 				FileType="3"

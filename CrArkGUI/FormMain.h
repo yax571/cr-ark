@@ -1,6 +1,7 @@
 #pragma once
 
 #include "FormProcess.h"
+#include "FormDetail.h"
 
 namespace CrArkGUI {
 
@@ -169,12 +170,20 @@ namespace CrArkGUI {
     private:
         Boolean AutoRefresh;
         FormProcess^ ProcessWnd;
+        FormDetail^ DetailWnd;
 
     private: 
         //窗口加载时
         Void Form1_Load(Object^  sender, EventArgs^  e) {
+            //详细信息窗口
+            DetailWnd = gcnew FormDetail();
+            DetailWnd->TopLevel = false;
+            DetailWnd->Dock = DockStyle::Fill;
+            splitContainerMain->Panel2->Controls->Add(DetailWnd);
+            DetailWnd->Show();
+
             //进程窗口
-            ProcessWnd = gcnew FormProcess();
+            ProcessWnd = gcnew FormProcess(DetailWnd);
             ProcessWnd->TopLevel = false;
             ProcessWnd->Dock = DockStyle::Fill;
             splitContainerMain->Panel1->Controls->Add(ProcessWnd);

@@ -401,6 +401,7 @@ QueryProcessInfo(PEPROCESS Process)
 {
     PProcessInfo processInfo;
     PUCHAR magic;
+    LARGE_INTEGER sysTime;
 
     if(!IsProcessObject(Process) ||
         IsProcessDeleting(Process))
@@ -416,7 +417,8 @@ QueryProcessInfo(PEPROCESS Process)
 
     magic = (PUCHAR)Process;
     processInfo->BasePriority = *(PCHAR)(magic + KProcessBasePriorityOffset);
-    processInfo->CreateTime = *(PLARGE_INTEGER)(magic + EProcessCreateTimeOffset);
+    sysTime = *(PLARGE_INTEGER)(magic + EProcessCreateTimeOffset);
+    ExSystemTimeToLocalTime(&sysTime, &processInfo->CreateTime);
     processInfo->DebugPort = *(PULONG)(magic + EProcessDebugPortOffset);
     processInfo->InheritedFromUniqueProcessId = *(PULONG)(magic + EProcessInheritedFromUniqueProcessIdOffset);
     processInfo->Peb = *(PVOID*)(magic + EProcessPebOffset);
