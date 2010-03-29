@@ -102,6 +102,7 @@ namespace CrArkGUI {
             this->listViewProcess->ContextMenuStrip = this->contextMenu;
             this->listViewProcess->Dock = System::Windows::Forms::DockStyle::Fill;
             this->listViewProcess->FullRowSelect = true;
+            this->listViewProcess->HideSelection = false;
             this->listViewProcess->Location = System::Drawing::Point(0, 0);
             this->listViewProcess->MultiSelect = false;
             this->listViewProcess->Name = L"listViewProcess";
@@ -137,45 +138,45 @@ namespace CrArkGUI {
             this->contextMenu->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(7) {this->menuItemCopy, this->menuItemRefresh, 
                 this->toolStripSeparator1, this->menuItemTerminateProcess, this->menuItemForceTerminateProcess, this->toolStripSeparator2, this->menuItemShowDeleting});
             this->contextMenu->Name = L"contextMenu";
-            this->contextMenu->Size = System::Drawing::Size(216, 126);
+            this->contextMenu->Size = System::Drawing::Size(227, 126);
             // 
             // menuItemCopy
             // 
             this->menuItemCopy->Name = L"menuItemCopy";
-            this->menuItemCopy->Size = System::Drawing::Size(215, 22);
+            this->menuItemCopy->Size = System::Drawing::Size(226, 22);
             this->menuItemCopy->Text = L"复制到剪贴板(&C)";
             this->menuItemCopy->Click += gcnew System::EventHandler(this, &FormProcess::menuItemCopy_Click);
             // 
             // menuItemRefresh
             // 
             this->menuItemRefresh->Name = L"menuItemRefresh";
-            this->menuItemRefresh->Size = System::Drawing::Size(215, 22);
+            this->menuItemRefresh->Size = System::Drawing::Size(226, 22);
             this->menuItemRefresh->Text = L"刷新(&R)";
             this->menuItemRefresh->Click += gcnew System::EventHandler(this, &FormProcess::menuItemRefresh_Click);
             // 
             // toolStripSeparator1
             // 
             this->toolStripSeparator1->Name = L"toolStripSeparator1";
-            this->toolStripSeparator1->Size = System::Drawing::Size(212, 6);
+            this->toolStripSeparator1->Size = System::Drawing::Size(223, 6);
             // 
             // menuItemTerminateProcess
             // 
             this->menuItemTerminateProcess->Name = L"menuItemTerminateProcess";
-            this->menuItemTerminateProcess->Size = System::Drawing::Size(215, 22);
+            this->menuItemTerminateProcess->Size = System::Drawing::Size(226, 22);
             this->menuItemTerminateProcess->Text = L"结束进程(&T)";
             this->menuItemTerminateProcess->Click += gcnew System::EventHandler(this, &FormProcess::menuItemTerminateProcess_Click);
             // 
             // menuItemForceTerminateProcess
             // 
             this->menuItemForceTerminateProcess->Name = L"menuItemForceTerminateProcess";
-            this->menuItemForceTerminateProcess->Size = System::Drawing::Size(215, 22);
+            this->menuItemForceTerminateProcess->Size = System::Drawing::Size(226, 22);
             this->menuItemForceTerminateProcess->Text = L"强制结束进程(&F)";
             this->menuItemForceTerminateProcess->Click += gcnew System::EventHandler(this, &FormProcess::menuItemForceTerminateProcess_Click);
             // 
             // toolStripSeparator2
             // 
             this->toolStripSeparator2->Name = L"toolStripSeparator2";
-            this->toolStripSeparator2->Size = System::Drawing::Size(212, 6);
+            this->toolStripSeparator2->Size = System::Drawing::Size(223, 6);
             // 
             // menuItemShowDeleting
             // 
@@ -183,7 +184,7 @@ namespace CrArkGUI {
             this->menuItemShowDeleting->CheckOnClick = true;
             this->menuItemShowDeleting->CheckState = System::Windows::Forms::CheckState::Checked;
             this->menuItemShowDeleting->Name = L"menuItemShowDeleting";
-            this->menuItemShowDeleting->Size = System::Drawing::Size(215, 22);
+            this->menuItemShowDeleting->Size = System::Drawing::Size(226, 22);
             this->menuItemShowDeleting->Text = L"显示状态为 &Deleting 的进程";
             this->menuItemShowDeleting->Click += gcnew System::EventHandler(this, &FormProcess::menuItemShowDeleting_Click);
             // 

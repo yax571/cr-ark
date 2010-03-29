@@ -11,12 +11,12 @@ using namespace System::Security::Permissions;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly:AssemblyTitleAttribute("CrArkGUI")];
-[assembly:AssemblyDescriptionAttribute("")];
+[assembly:AssemblyTitleAttribute("Cr-AntiRootkit")];
+[assembly:AssemblyDescriptionAttribute("Cr-AntiRootkit")];
 [assembly:AssemblyConfigurationAttribute("")];
-[assembly:AssemblyCompanyAttribute("Lenovo (Beijing) Limited")];
-[assembly:AssemblyProductAttribute("CrArkGUI")];
-[assembly:AssemblyCopyrightAttribute("Copyright (c) Lenovo (Beijing) Limited 2010")];
+[assembly:AssemblyCompanyAttribute("")];
+[assembly:AssemblyProductAttribute("Cr-AntiRootkit")];
+[assembly:AssemblyCopyrightAttribute("by Cradiator")];
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];
 
