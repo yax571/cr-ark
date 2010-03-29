@@ -27,7 +27,7 @@ namespace CrArkGUI {
 		Form1(void)
 		{
 			InitializeComponent();
-            AutoRefresh = true;
+            AutoRefresh = false;
 		}
 
 	protected:
@@ -83,7 +83,7 @@ namespace CrArkGUI {
                 this->menuItemTools, this->menuItemHelp});
             this->menuStripFile->Location = System::Drawing::Point(0, 0);
             this->menuStripFile->Name = L"menuStripFile";
-            this->menuStripFile->Size = System::Drawing::Size(576, 24);
+            this->menuStripFile->Size = System::Drawing::Size(641, 24);
             this->menuStripFile->TabIndex = 0;
             this->menuStripFile->Text = L"menuStrip1";
             // 
@@ -97,18 +97,16 @@ namespace CrArkGUI {
             // 
             // menuItemAutoRefresh
             // 
-            this->menuItemAutoRefresh->Checked = true;
             this->menuItemAutoRefresh->CheckOnClick = true;
-            this->menuItemAutoRefresh->CheckState = System::Windows::Forms::CheckState::Checked;
             this->menuItemAutoRefresh->Name = L"menuItemAutoRefresh";
-            this->menuItemAutoRefresh->Size = System::Drawing::Size(136, 22);
+            this->menuItemAutoRefresh->Size = System::Drawing::Size(152, 22);
             this->menuItemAutoRefresh->Text = L"自动刷新(&A)";
             this->menuItemAutoRefresh->Click += gcnew System::EventHandler(this, &Form1::menuItemAutoRefresh_Click);
             // 
             // menuItemExit
             // 
             this->menuItemExit->Name = L"menuItemExit";
-            this->menuItemExit->Size = System::Drawing::Size(136, 22);
+            this->menuItemExit->Size = System::Drawing::Size(152, 22);
             this->menuItemExit->Text = L"退出(&X)";
             this->menuItemExit->Click += gcnew System::EventHandler(this, &Form1::menuItemExit_Click);
             // 
@@ -137,7 +135,7 @@ namespace CrArkGUI {
             this->splitContainerMain->Location = System::Drawing::Point(0, 24);
             this->splitContainerMain->Name = L"splitContainerMain";
             this->splitContainerMain->Orientation = System::Windows::Forms::Orientation::Horizontal;
-            this->splitContainerMain->Size = System::Drawing::Size(576, 543);
+            this->splitContainerMain->Size = System::Drawing::Size(641, 543);
             this->splitContainerMain->SplitterDistance = 362;
             this->splitContainerMain->TabIndex = 1;
             // 
@@ -151,7 +149,7 @@ namespace CrArkGUI {
             // 
             this->AutoScaleDimensions = System::Drawing::SizeF(6, 12);
             this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-            this->ClientSize = System::Drawing::Size(576, 567);
+            this->ClientSize = System::Drawing::Size(641, 567);
             this->Controls->Add(this->splitContainerMain);
             this->Controls->Add(this->menuStripFile);
             this->MainMenuStrip = this->menuStripFile;
