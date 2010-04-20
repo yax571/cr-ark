@@ -97,3 +97,20 @@ NTSTATUS
 DispatchProtectObject(PVOID InputBuffer, ULONG InputLength,
                       PVOID OutputBuffer, ULONG OutputLength,
                       PULONG Information);
+
+//读内存
+//InputBuffer[0] == 起始地址
+//OutputBuffer == 读出的缓冲区
+NTSTATUS
+DispatchReadMem(PVOID InputBuffer, ULONG InputLength,
+                PVOID OutputBuffer, ULONG OutputLength,
+                PULONG Information);
+
+//写内存
+//InputBuffer[0] == source 
+//InputBuffer[1] == dest
+//InputBuffer[2] == length
+NTSTATUS
+DispatchWriteMem(PVOID InputBuffer, ULONG InputLength,
+                 PVOID OutputBuffer, ULONG OutputLength,
+                 PULONG Information);

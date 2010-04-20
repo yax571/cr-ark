@@ -203,6 +203,14 @@
 				RelativePath=".\Init.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\Mem.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Ssdt.cpp"
+				>
+			</File>
 			<Filter
 				Name="misc"
 				>
@@ -235,6 +243,14 @@
 			>
 			<File
 				RelativePath=".\CrArkKrnl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Mem.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Ssdt.h"
 				>
 			</File>
 			<Filter
