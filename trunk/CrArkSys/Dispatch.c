@@ -602,3 +602,85 @@ DispatchProtectObject(PVOID InputBuffer, ULONG InputLength,
     ProtectAddObject(object, remove);
     return status;
 }
+
+//读内存
+//InputBuffer[0] == 起始地址
+//OutputBuffer == 读出的缓冲区
+NTSTATUS
+DispatchReadMem(PVOID InputBuffer, ULONG InputLength,
+                PVOID OutputBuffer, ULONG OutputLength,
+                PULONG Information)
+{
+    PVOID baseAddress;
+    NTSTATUS status;
+
+    *Information = 0;
+
+    if(InputBuffer == NULL ||
+        InputLength != sizeof(ULONG))    
+    {
+        KdPrint(("DispatchReadMem Param length mismatch\n"));
+        return STATUS_INVALID_PARAMETER;
+    }
+
+    try {
+        ProbeForRead(InputBuffer, InputLength, 1);
+        baseAddress = *(PVOID*)InputBuffer;
+        status = STATUS_SUCCESS;
+    } except(EXCEPTION_CONTINUE_EXECUTION) {
+        status = STATUS_ACCESS_VIOLATION;
+    }
+    if(!NT_SUCCESS(status))
+        return status;
+
+    if(baseAddress <= MM_USER_PROBE_ADDRESS ||
+       OutputLength > MM_USER_PROBE_ADDRESS)
+       return STATUS_ACCESS_VIOLATION;
+
+    try {
+        RtlCopyMemory(OutputBuffer, baseAddress, OutputLength);
+        status = STATUS_SUCCESS;
+    } except(EXCEPTION_CONTINUE_EXECUTION) {
+        status = STATUS_ACCESS_VIOLATION;
+    }
+    if(!NT_SUCCESS(status))
+        return status;
+
+    *Information = OutputLength;
+    return status;
+}
+
+//写内存
+//InputBuffer[0] == source 
+//InputBuffer[1] == dest
+//InputBuffer[2] == length
+NTSTATUS
+DispatchWriteMem(PVOID InputBuffer, ULONG InputLength,
+                 PVOID OutputBuffer, ULONG OutputLength,
+                 PULONG Information)
+{
+    PVOID sourceAddr, destAddr;
+    ULONG length;
+    NTSTATUS status;
+
+    *Information = 0;
+
+    if(InputLength != sizeof(ULONG) * 3)
+        return STATUS_INVALID_PARAMETER;
+
+    try {
+        sourceAddr = *(PVOID*)InputBuffer;
+        destAddr = *(PVOID*)((ULONG)InputBuffer + 4);
+        length = *(ULONG*)((ULONG)InputBuffer + 8);
+        RtlCopyMemory(destAddr, sourceAddr, length);
+        status = STATUS_SUCCESS;
+    } except(EXCEPTION_CONTINUE_EXECUTION) {
+        status = STATUS_ACCESS_VIOLATION;
+    }
+
+    if(!NT_SUCCESS(status))
+        return status;
+
+    *Information = length;
+    return status;
+}

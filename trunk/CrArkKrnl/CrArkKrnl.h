@@ -59,6 +59,11 @@ typedef struct _ModuleInfo {
     char FullPath[FULL_PATH_LENGTH];
 }ModuleInfo, *PModuleInfo;
 
+typedef struct _ServiceTableInfo {
+    DWORD Count;
+    PVOID OriginAddress[1500];
+    PVOID CurrentAddress[1500];
+}ServiceTableInfo, *PServiceTableInfo;
 
 //释放其它函数生成的资源
 CRARKAPI VOID WINAPI CrFreeMem(PVOID Address);
@@ -123,3 +128,6 @@ CRARKAPI BOOL WINAPI CrProtectObject(PVOID Object, BOOL Remove);
 //Protect == TRUE   开始保护
 //        == FALSE  取消保护
 CRARKAPI VOID WINAPI CrProtectProcess(DWORD Pid, BOOL Protect);
+
+//检测SSDT
+CRARKAPI PServiceTableInfo WINAPI CrGetSSDTInfo();
