@@ -131,3 +131,6 @@ CRARKAPI VOID WINAPI CrProtectProcess(DWORD Pid, BOOL Protect);
 
 //ºÏ≤‚SSDT
 CRARKAPI PServiceTableInfo WINAPI CrGetSSDTInfo();
+
+//–ﬁ∏¥SSDT
+CRARKAPI BOOL WINAPI CrFixSsdt(DWORD ServiceNumber, LPVOID Address);

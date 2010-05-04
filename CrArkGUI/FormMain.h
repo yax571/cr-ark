@@ -2,6 +2,7 @@
 
 #include "FormProcess.h"
 #include "FormDetail.h"
+#include "FormSSDT.h"
 
 namespace CrArkGUI {
 
@@ -48,6 +49,7 @@ namespace CrArkGUI {
     private: System::Windows::Forms::ToolStripMenuItem^  menuItemAbout;
     private: System::Windows::Forms::SplitContainer^  splitContainerMain;
     private: System::Windows::Forms::Timer^  timerRefresh;
+    private: System::Windows::Forms::ToolStripMenuItem^  menuItemSSDT;
     private: System::ComponentModel::IContainer^  components;
 
 	private:
@@ -73,6 +75,7 @@ namespace CrArkGUI {
             this->menuItemAbout = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->splitContainerMain = (gcnew System::Windows::Forms::SplitContainer());
             this->timerRefresh = (gcnew System::Windows::Forms::Timer(this->components));
+            this->menuItemSSDT = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->menuStripFile->SuspendLayout();
             this->splitContainerMain->SuspendLayout();
             this->SuspendLayout();
@@ -112,6 +115,7 @@ namespace CrArkGUI {
             // 
             // menuItemTools
             // 
+            this->menuItemTools->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->menuItemSSDT});
             this->menuItemTools->Name = L"menuItemTools";
             this->menuItemTools->Size = System::Drawing::Size(59, 20);
             this->menuItemTools->Text = L"工具(&T)";
@@ -144,6 +148,13 @@ namespace CrArkGUI {
             this->timerRefresh->Enabled = true;
             this->timerRefresh->Interval = 2000;
             this->timerRefresh->Tick += gcnew System::EventHandler(this, &Form1::timerRefresh_Tick);
+            // 
+            // menuItemSSDT
+            // 
+            this->menuItemSSDT->Name = L"menuItemSSDT";
+            this->menuItemSSDT->Size = System::Drawing::Size(152, 22);
+            this->menuItemSSDT->Text = L"&SSDT";
+            this->menuItemSSDT->Click += gcnew System::EventHandler(this, &Form1::menuItemSSDT_Click);
             // 
             // Form1
             // 
@@ -205,6 +216,12 @@ namespace CrArkGUI {
         Void timerRefresh_Tick(Object^  sender, EventArgs^  e) {
             if(AutoRefresh)
                 ProcessWnd->ProcessRefresh();
+        }
+
+        //工具 -> SSDT 
+        Void menuItemSSDT_Click(Object^  sender, EventArgs^  e) {
+            FormSSDT^ form = gcnew FormSSDT();
+            form->ShowDialog();
         }
 };
 }
