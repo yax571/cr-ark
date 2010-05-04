@@ -212,6 +212,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\FromSSDT.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -267,6 +271,16 @@
 				>
 				<File
 					RelativePath=".\FormProcess.resx"
+					SubType="Designer"
+					>
+				</File>
+			</File>
+			<File
+				RelativePath=".\FormSSDT.h"
+				FileType="3"
+				>
+				<File
+					RelativePath=".\FormSSDT.resx"
 					SubType="Designer"
 					>
 				</File>

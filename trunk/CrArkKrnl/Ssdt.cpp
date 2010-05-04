@@ -16,6 +16,7 @@ char KernelImgName[256];
 char Win32kImgName[256];
 PVOID KernelImgBase;
 PVOID Win32kImgBase;
+PVOID RemoteKiServiceTable = NULL;
 
 BOOL LoadKernelImg() {
     PVOID buffer;
@@ -102,6 +103,7 @@ PServiceTableInfo WINAPI CrGetSSDTInfo() {
     dwRet = ReadKernelMem((PVOID)ssdtAddress, &remoteSSDT, sizeof(remoteSSDT));
     if(dwRet != sizeof(remoteSSDT))
         return NULL;
+    RemoteKiServiceTable = ssdtAddress;
 
     //计算本地的KiServiceTable地址
     localKiServiceTable = (DWORD)remoteSSDT.ServiceRoutineTable - (DWORD)KernelImgBase + (DWORD)KernelHandle;
@@ -124,5 +126,18 @@ PServiceTableInfo WINAPI CrGetSSDTInfo() {
     }
 
     return serviceTableInfo;
+}
+
+BOOL WINAPI CrFixSsdt(DWORD ServiceNumber, LPVOID Address) {
+    DWORD dwRet;
+    if(RemoteKiServiceTable == NULL)
+        return FALSE;
+
+    dwRet = WriteKernelMem(&Address, 
+                           (PUCHAR)RemoteKiServiceTable + 4 * ServiceNumber, 4);
+    if(dwRet != 4)
+        return FALSE;
+
+    return TRUE;
 }
 
