@@ -208,6 +208,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MsgHook.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Ssdt.cpp"
 				>
 			</File>
@@ -247,6 +251,10 @@
 			</File>
 			<File
 				RelativePath=".\Mem.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MsgHook.h"
 				>
 			</File>
 			<File
