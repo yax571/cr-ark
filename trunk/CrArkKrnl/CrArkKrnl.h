@@ -63,6 +63,9 @@ typedef struct _ServiceTableInfo {
     DWORD Count;
     PVOID OriginAddress[1500];
     PVOID CurrentAddress[1500];
+    PCHAR CurrentModuleName[1500];
+    PCHAR FunctionName[1500];
+    unsigned char ParamTable[1500];
 }ServiceTableInfo, *PServiceTableInfo;
 
 //释放其它函数生成的资源
