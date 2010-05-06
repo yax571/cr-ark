@@ -1,14 +1,76 @@
+#include "stdafx.h"
 #include "Mem.h"
 #include "MsgHook.h"
+#include <vector>
 
 typedef struct _MsgHookInfo {
     DWORD Handle;
-    BYTE Type;
+    int idHook;
     PVOID Function;
     PCHAR ModuleName;
     PVOID EProcess;
     PVOID EThread;
 }MsgHookInfo, *PMsgHookInfo;
+
+typedef enum _HANDLE_TYPE
+{
+    TYPE_FREE = 0,
+    TYPE_WINDOW = 1,
+    TYPE_MENU = 2,
+    TYPE_CURSOR = 3,
+    TYPE_SETWINDOWPOS = 4,
+    TYPE_HOOK = 5,
+    TYPE_CLIPDATA = 6,
+    TYPE_CALLPROC = 7,
+    TYPE_ACCELTABLE = 8,
+    TYPE_DDEACCESS = 9,
+    TYPE_DDECONV = 10,
+    TYPE_DDEXACT = 11,
+    TYPE_MONITOR = 12,
+    TYPE_KBDLAYOUT = 13,
+    TYPE_KBDFILE = 14,
+    TYPE_WINEVENTHOOK = 15,
+    TYPE_TIMER = 16,
+    TYPE_INPUTCONTEXT = 17,
+    TYPE_CTYPES = 18,
+    TYPE_GENERIC = 255
+}HANDLE_TYPE;
+
+typedef struct _HEAD
+{
+    HANDLE h;
+    ULONG cLockObj;
+}HEAD;
+
+typedef struct _THROBJHEAD
+{
+    HEAD headinfo;
+    PVOID pti; 
+}THROBJHEAD;
+
+typedef  struct _DESKHEAD
+{
+    PVOID rpdesk; 
+    PBYTE pSelf ; 
+}DESKHEAD;
+
+typedef struct _THRDESKHEAD
+{
+    THROBJHEAD ThreadObjHead ;
+    DESKHEAD DesktopHead ;
+}THRDESKHEAD;
+
+typedef  struct _HOOK
+{
+    THRDESKHEAD tshead ;
+    struct _HOOK* phkNext ;
+    int idHook;    
+    ULONG offPfn;    
+    UINT flags ;        
+    DWORD  ihmod ;    
+    PVOID ptiHooked;    
+    PVOID rpdesk ;      
+}HOOK,*PHOOK;
 
 typedef struct _HANDLEENTRY{
     PVOID  phead;       
@@ -38,6 +100,11 @@ PMsgHookInfo WINAPI CrGetMsgHookInfo() {
     SERVERINFO serverInfo;
     HMODULE hUser32;
     PBYTE lpUserRegisterWowHandlers, currentPos;
+    PHANDLEENTRY pHandleEntry = NULL;
+    MsgHookInfo msgHookInfo;
+    HOOK hook;
+    std::vector<MsgHookInfo> msgHookInfoArray;
+    DWORD i, dwRet;
 
     // 首先从user32.dll -> UserRegisterWowHandlers 中搜索
     // SharedInfo结构的指针
@@ -50,7 +117,7 @@ PMsgHookInfo WINAPI CrGetMsgHookInfo() {
             return NULL;
 
         // 获得UserRegisterWowHandlers的指针
-        lpUserRegisterWowHandlers = GetProcAddress(hUser32, "UserRegisterWowHandlers");
+        lpUserRegisterWowHandlers = (PBYTE)GetProcAddress(hUser32, "UserRegisterWowHandlers");
         if(lpUserRegisterWowHandlers == NULL)
             return NULL;
 
@@ -68,7 +135,32 @@ PMsgHookInfo WINAPI CrGetMsgHookInfo() {
         }
     }
 
+    // 获得SharedInfo->psi
+    // 生成缓冲区
     memcpy(&serverInfo, pSharedInfo->psi, sizeof(serverInfo));
+    pHandleEntry = (PHANDLEENTRY)(new BYTE[serverInfo.cHandleEntries * sizeof(HANDLEENTRY)]);
+    if(pHandleEntry == NULL)
+        return NULL;
 
+
+    // 获取HandleEntry
+    memcpy(pHandleEntry, pSharedInfo->aheList, serverInfo.cHandleEntries * sizeof(HANDLEENTRY));
+    for(i = 0; i < serverInfo.cHandleEntries; ++i) {
+        if(pHandleEntry[i].bType != TYPE_HOOK)
+            continue;
+
+        dwRet = ReadKernelMem(pHandleEntry[i].phead, &hook, sizeof(hook));
+        if(dwRet != sizeof(hook)) 
+            goto __ExitCrGetMsgHookInfo;
+
+        msgHookInfo.idHook = hook.idHook;
+        msgHookInfo.Function = (PVOID)hook.offPfn;
+        msgHookInfo.Handle = (DWORD)hook.tshead.ThreadObjHead.headinfo.h;
+
+    }
+
+__ExitCrGetMsgHookInfo:
+    if(pHandleEntry)
+        delete[] pHandleEntry;
     return NULL;
 }
